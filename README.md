@@ -1,6 +1,6 @@
 ## Serenity Cucumber Integration
 
-This module lets you produce Serenity reports using Cucumber. You run your tests as normal, 
+This module lets you produce Serenity reports using Cucumber JVM 4.2.0. You run your tests as normal,
 but using the *CucumberWithSerenity* runner, e.g.:
 
 ```java
@@ -9,7 +9,11 @@ but using the *CucumberWithSerenity* runner, e.g.:
 public class SimpleTableScenario {}
 ```
 
+## Upgrading from Cucumber-JVM 2.x.x
 
+https://cucumber.io/blog/2018/05/19/announcing-cucumber-jvm-3-0-0
+https://cucumber.io/blog/2018/09/24/announcing-cucumber-jvm-4-0-0
+https://cucumber.io/blog/2018/10/31/announcing-cucumber-jvm-4-2-0
 
 ## Found a bug? Please read this before you raise an issue.
 
