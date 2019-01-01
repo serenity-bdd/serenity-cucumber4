@@ -70,7 +70,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
     private final ThreadLocalRunnerSupplier runnerSupplier;
     private final Filters filters;
     private final JUnitOptions junitOptions;
-    private static RuntimeOptions RUNTIME_OPTIONS;
+    private static ThreadLocal<RuntimeOptions> RUNTIME_OPTIONS = new ThreadLocal<>();
     /**
      * Constructor called by JUnit.
      *
@@ -86,7 +86,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         RuntimeOptions runtimeOptions = runtimeOptionsFactory.create();
         runtimeOptions.getTagFilters().addAll(environmentSpecifiedTags(runtimeOptions.getTagFilters()));
 
-        RUNTIME_OPTIONS = runtimeOptions;
+        setRuntimeOptions(runtimeOptions);
 
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
         FeatureLoader featureLoader = new FeatureLoader(resourceLoader);
@@ -120,11 +120,11 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
     }
 
     public static void setRuntimeOptions(RuntimeOptions runtimeOptions) {
-        RUNTIME_OPTIONS = runtimeOptions;
+        RUNTIME_OPTIONS.set(runtimeOptions);
     }
 
     public static RuntimeOptions currentRuntimeOptions() {
-        return RUNTIME_OPTIONS;
+        return RUNTIME_OPTIONS.get();
     }
 
     private static Collection<String> environmentSpecifiedTags(List<?> existingTags) {
@@ -149,7 +149,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
                                                        Configuration systemConfiguration) {
         ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader, classLoader);
         runtimeOptions.getTagFilters().addAll(environmentSpecifiedTags(runtimeOptions.getTagFilters()));
-        RUNTIME_OPTIONS = runtimeOptions;
+        setRuntimeOptions(runtimeOptions);
 
         FeatureLoader featureLoader = new FeatureLoader(resourceLoader);
         FeaturePathFeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(featureLoader, runtimeOptions);
