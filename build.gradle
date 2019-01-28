@@ -36,8 +36,8 @@ repositories {
 ext {
     bintrayBaseUrl = 'https://api.bintray.com/maven'
     bintrayRepository = 'maven'
-    bintrayPackage = 'serenity-cucumber'
-    projectDescription = 'Serenity Cucumber integration'
+    bintrayPackage = 'serenity-cucumber4'
+    projectDescription = 'Serenity Cucumber 4.x integration'
 
     if (!project.hasProperty("bintrayUsername")) {
         bintrayUsername = 'wakaleo'
@@ -87,7 +87,7 @@ configurations.all {
         //failOnVersionConflict()
         force  "commons-collections:commons-collections:${commonsCollectionsVersion}",
         "xml-apis:xml-apis:${xmlApiVersion}",
-                "commons-codec:commons-codec:${commonsCodecVersion}",
+       "commons-codec:commons-codec:${commonsCodecVersion}",
         "com.google.code.gson:gson:${gsonVersion}"
     }
 }
