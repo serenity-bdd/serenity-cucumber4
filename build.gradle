@@ -1,6 +1,6 @@
 import net.serenitybdd.builds.ProjectVersionCounter
 
-buildscript {
+buildscript {§
     repositories {
         mavenLocal()
         jcenter()
@@ -162,14 +162,14 @@ publishing {
             pom.withXml {
                 asNode().children().last() + {
                     resolveStrategy = Closure.DELEGATE_FIRST
-                    name 'serenity-cucumber'
+                    name 'serenity-cucumber4'
                     description 'Serenity Cucumber Integration'
 
-                    url 'https://github.com/serenity-bdd/serenity-cucumber'
+                    url 'https://github.com/serenity-bdd/serenity-cucumber4'
                     scm {
-                        url 'scm:git:git@github.com:serenity-bdd/serenity-cucumber.git'
-                        connection 'scm:git:git@github.com:serenity-bdd/serenity-cucumber.git'
-                        developerConnection 'scm:git:git@github.com:serenity-bdd/serenity-cucumber.git'
+                        url 'scm:git:git@github.com:serenity-bdd/serenity-cucumber4.git'
+                        connection 'scm:git:git@github.com:serenity-bdd/serenity-cucumber4.git'
+                        developerConnection 'scm:git:git@github.com:serenity-bdd/serenity-cucumber4.git'
                     }
                     licenses {
                         license {
@@ -216,7 +216,7 @@ bintray {
     pkg {
         repo = 'maven'
         userOrg = 'serenity'
-        name = 'serenity-cucumber'
+        name = 'serenity-cucumber4'
         desc = 'Serenity Cucumber integration'
         licenses = ['Apache-2.0']
         labels = ['serenity','bdd','cucumber']
