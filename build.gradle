@@ -1,6 +1,6 @@
 import net.serenitybdd.builds.ProjectVersionCounter
 
-buildscript {§
+buildscript {
     repositories {
         mavenLocal()
         jcenter()
