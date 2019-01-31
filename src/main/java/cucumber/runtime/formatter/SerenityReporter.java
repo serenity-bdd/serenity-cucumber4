@@ -348,11 +348,7 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     }
 
     private void handleTestRunFinished(TestRunFinished event) {
-        if (examplesRunning) {
-            finishExample();
-        } else {
-            generateReports();
-        }
+        generateReports();
         assureTestSuiteFinished();
     }
 
@@ -694,7 +690,6 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
             }
         }
         return issues;
-    }
 
     private void startExample(Integer lineNumber) {
         Map<String, String> data = exampleRows().get(lineNumber);
@@ -712,7 +707,6 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
         if (exampleCount == 0) {
             examplesRunning = false;
             setTableScenarioOutline();
-            generateReports();
         } else {
             examplesRunning = true;
         }
