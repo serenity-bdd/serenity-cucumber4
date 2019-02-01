@@ -690,7 +690,8 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
             }
         }
         return issues;
-
+    }
+    
     private void startExample(Integer lineNumber) {
         Map<String, String> data = exampleRows().get(lineNumber);
         getStepEventBus(currentFeaturePath()).clearStepFailures();
