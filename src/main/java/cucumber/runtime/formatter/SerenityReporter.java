@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -88,7 +89,8 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     private boolean addingScenarioOutlineSteps = false;
 
-    private Map<String, List<Long>> lineFilters;
+    private Map<URI, Set<Integer>> lineFilters;
+
 
     private List<Tag> scenarioTags;
 
@@ -117,14 +119,16 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     private StepEventBus getStepEventBus(String featurePath){
         if (lineFilters.containsKey(featurePath)) {
-            featurePath += ":" + lineFilters.get(featurePath).get(0).longValue();
+            Set<Integer> filtersSet = lineFilters.get(featurePath);
+            featurePath += ":" + filtersSet.toArray(new Integer[filtersSet.size()])[0].intValue();
         }
         return StepEventBus.eventBusFor(featurePath);
     }
 
     private void setStepEventBus(String featurePath){
         if (lineFilters.containsKey(featurePath)) {
-            featurePath += ":" + lineFilters.get(featurePath).get(0).longValue();
+            Set<Integer> filtersSet = lineFilters.get(featurePath);
+            featurePath += ":" + filtersSet.toArray(new Integer[filtersSet.size()])[0].intValue();
         }
         StepEventBus.setCurrentBusToEventBusFor(featurePath);
     }
@@ -245,7 +249,6 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     private void handleTestCaseStarted(TestCaseStarted event) {
 
-        //initLineFilters(new MultiLoader(SerenityReporter.class.getClassLoader()));
         currentFeaturePathIs(event.testCase.getUri());
         setStepEventBus(event.testCase.getUri());
 
@@ -437,12 +440,11 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     private void initLineFilters(ResourceLoader resourceLoader) {
         if (lineFilters == null) {
-            Map<String, List<Long>> lineFiltersFromRuntime = CucumberWithSerenity.currentRuntimeOptions()
-                    .getLineFilters();
+            Map<URI, Set<Integer>> lineFiltersFromRuntime = CucumberWithSerenity.currentRuntimeOptions().getLineFilters();
             if (lineFiltersFromRuntime == null) {
-                lineFilters = new HashMap<>();
+                this.lineFilters = new HashMap<>();
             } else {
-                lineFilters = lineFiltersFromRuntime;
+                this.lineFilters = lineFiltersFromRuntime;
             }
         }
     }

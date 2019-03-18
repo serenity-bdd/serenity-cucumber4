@@ -4,8 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.net.URI;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -14,8 +14,8 @@ public class ScenarioLineCountStatisticsTest {
     ScenarioLineCountStatistics stats;
 
     @Before
-    public void setup() {
-        stats = ScenarioLineCountStatistics.fromFeaturePath("classpath:samples");
+    public void setup() throws Exception  {
+        stats = ScenarioLineCountStatistics.fromFeaturePath(new URI("classpath:samples"));
 
     }
 

@@ -11,7 +11,6 @@ import cucumber.runner.TimeServiceEventBus;
 import cucumber.runtime.*;
 import cucumber.runtime.Runtime;
 import cucumber.runtime.filter.Filters;
-import cucumber.runtime.filter.RerunFilters;
 import cucumber.runtime.formatter.PluginFactory;
 import cucumber.runtime.formatter.Plugins;
 import cucumber.runtime.formatter.SerenityReporter;
@@ -42,6 +41,7 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URI;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -104,8 +104,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         addSerenityReporterPlugin(plugins,reporter);
 
         this.runnerSupplier = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier);
-        RerunFilters rerunFilters = new RerunFilters(runtimeOptions, featureLoader);
-        this.filters = new Filters(runtimeOptions, rerunFilters);
+        this.filters = new Filters(runtimeOptions);
         this.junitOptions = new JUnitOptions(runtimeOptions.isStrict(), runtimeOptions.getJunitOptions());
         final StepDefinitionReporter stepDefinitionReporter = plugins.stepDefinitionReporter();
 
@@ -221,7 +220,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
             EnvironmentVariables environmentVariables = Injectors.getInjector().getInstance(EnvironmentVariables.class);
             RuntimeOptions runtimeOptions = currentRuntimeOptions();
             List<String> tagFilters = runtimeOptions.getTagFilters();
-            List<String> featurePaths = runtimeOptions.getFeaturePaths();
+            List<URI> featurePaths = runtimeOptions.getFeaturePaths();
             int batchNumber = environmentVariables.getPropertyAsInteger(SERENITY_BATCH_NUMBER, 1);
             int batchCount = environmentVariables.getPropertyAsInteger(SERENITY_BATCH_COUNT, 1);
             int forkNumber = environmentVariables.getPropertyAsInteger(SERENITY_FORK_NUMBER, 1);
@@ -231,7 +230,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
             } else {
                 LOGGER.info("Running slice {} of {} using fork {} of {} from feature paths {}", batchNumber, batchCount, forkNumber, forkCount, featurePaths);
 
-                WeightedCucumberScenarios weightedCucumberScenarios = new CucumberSuiteSlicer(featurePaths, TestStatistics.from(environmentVariables, featurePaths))
+                WeightedCucumberScenarios weightedCucumberScenarios = new CucumberSuiteSlicer(featurePaths, TestStatistics.from(environmentVariables,featurePaths ))
                     .scenarios(batchNumber, batchCount, forkNumber, forkCount, tagFilters);
 
                 List<FeatureRunner> unfilteredChildren = children;
