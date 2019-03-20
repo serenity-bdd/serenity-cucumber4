@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -30,10 +29,10 @@ import static java.util.stream.Collectors.toSet;
 public class CucumberScenarioLoader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CucumberScenarioLoader.class);
-    private final List<URI> featurePaths;
+    private final List<String> featurePaths;
     private final TestStatistics statistics;
 
-    public CucumberScenarioLoader(List<URI> featurePaths, TestStatistics statistics) {
+    public CucumberScenarioLoader(List<String> featurePaths, TestStatistics statistics) {
         this.featurePaths = featurePaths;
         this.statistics = statistics;
     }

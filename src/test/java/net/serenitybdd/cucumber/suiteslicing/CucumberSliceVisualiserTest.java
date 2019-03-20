@@ -3,10 +3,9 @@ package net.serenitybdd.cucumber.suiteslicing;
 import net.thucydides.core.annotations.Narrative;
 import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.util.EnvironmentVariables;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import java.net.URI;
 
 @Narrative(text = "There are no assertions in this test, but this is a useful tool for generating a visualisation of how a specific test slicing "
                   + "configuration will be executed as part of a running test. The test methods below allow a number of parameters to be input and when the test is run"
@@ -20,36 +19,35 @@ public class CucumberSliceVisualiserTest {
     private TestStatistics LINE_COUNT_STATISTICS;
     private EnvironmentVariables environmentVariables;
     private CucumberScenarioVisualiser cucumberScenarioVisualiser;
-    private static final String FEATURE_ROOT = "smoketests";
+    private static final String FEATURE_ROOT = "classpath:smoketests";
 
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         HISTORIC_RUN_STATISTICS = MultiRunTestStatistics.fromRelativePath("/statistics");
-        URI uri = getClass().getClassLoader().getResource(FEATURE_ROOT).toURI();
-        LINE_COUNT_STATISTICS = ScenarioLineCountStatistics.fromFeaturePath(uri);
+        LINE_COUNT_STATISTICS = ScenarioLineCountStatistics.fromFeaturePath(FEATURE_ROOT);
         environmentVariables = Injectors.getInjector().getInstance(EnvironmentVariables.class);
         cucumberScenarioVisualiser = new CucumberScenarioVisualiser(environmentVariables);
     }
 
     @Test
-    public void visualise1SliceWith4Forks() throws Exception{
-        cucumberScenarioVisualiser.visualise( getClass().getClassLoader().getResource(FEATURE_ROOT).toURI(), 4, 2, HISTORIC_RUN_STATISTICS);
+    public void visualise1SliceWith4Forks() {
+        cucumberScenarioVisualiser.visualise(FEATURE_ROOT, 4, 2, HISTORIC_RUN_STATISTICS);
     }
 
     @Test
-    public void visualise4SlicesWith2Forks() throws Exception{
-        cucumberScenarioVisualiser.visualise( getClass().getClassLoader().getResource(FEATURE_ROOT).toURI(), 4, 2, HISTORIC_RUN_STATISTICS);
+    public void visualise4SlicesWith2Forks() {
+        cucumberScenarioVisualiser.visualise(FEATURE_ROOT, 4, 2, HISTORIC_RUN_STATISTICS);
     }
 
     @Test
-    public void visualise5SlicesWith1ForkBasedOnRunStats() throws Exception{
-        cucumberScenarioVisualiser.visualise( getClass().getClassLoader().getResource(FEATURE_ROOT).toURI(), 5, 1, HISTORIC_RUN_STATISTICS);
+    public void visualise5SlicesWith1ForkBasedOnRunStats() {
+        cucumberScenarioVisualiser.visualise(FEATURE_ROOT, 5, 1, HISTORIC_RUN_STATISTICS);
     }
 
     @Test
-    public void visualise5SlicesWith1ForkBasedOnLineCount() throws Exception{
-        cucumberScenarioVisualiser.visualise( getClass().getClassLoader().getResource(FEATURE_ROOT).toURI(), 5, 1, LINE_COUNT_STATISTICS);
+    public void visualise5SlicesWith1ForkBasedOnLineCount() {
+        cucumberScenarioVisualiser.visualise(FEATURE_ROOT, 5, 1, LINE_COUNT_STATISTICS);
     }
 
 

@@ -4,7 +4,6 @@ import net.serenitybdd.cucumber.CucumberWithSerenity;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,16 +45,16 @@ public class StoredFeatureFile {
     }
 
     public File fromTheConfiguredPaths() throws IOException {
-        for(URI uri : CucumberWithSerenity.currentRuntimeOptions().getFeaturePaths()) {
-            if (Files.exists(candidatePath(uri, featureFileName))) {
-                return candidatePath(uri, featureFileName).toFile();
+        for(String path : CucumberWithSerenity.currentRuntimeOptions().getFeaturePaths()) {
+            if (Files.exists(candidatePath(path, featureFileName))) {
+                return candidatePath(path, featureFileName).toFile();
             }
         }
         throw new IOException("No such feature file found for " + featureFileName);
     }
 
-    private Path candidatePath(URI uri, String featureFileName) {
+    private Path candidatePath(String path, String featureFileName) {
 
-        return Paths.get(Stream.of(uri.getPath(), featureFileName).collect(Collectors.joining(File.separator)));
+        return Paths.get(Stream.of(path, featureFileName).collect(Collectors.joining(File.separator)));
     }
 }
