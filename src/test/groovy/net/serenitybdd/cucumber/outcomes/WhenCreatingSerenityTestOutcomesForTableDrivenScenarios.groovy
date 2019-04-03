@@ -346,7 +346,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
         def testOutcome = recordedTestOutcomes[0]
 
         then:
-        testOutcome.getTags().collect{testTag-> testTag.normalisedName()}.contains("example_one")
+        testOutcome.getTags().collect{testTag-> testTag.normalisedName()}.contains("example one")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS]
     }
 
@@ -360,7 +360,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
         def testOutcome = recordedTestOutcomes[0]
 
         then:
-        testOutcome.getTags().collect{testTag-> testTag.normalisedName()}.contains("example_two")
+        testOutcome.getTags().collect{testTag-> testTag.normalisedName()}.contains("example two")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS]
     }
 
@@ -375,8 +375,8 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
         then:
         def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-        testTagNames.contains("example_one")
-        testTagNames.contains("example_two")
+        testTagNames.contains("example one")
+        testTagNames.contains("example two")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS, SUCCESS, SUCCESS]
     }
 
@@ -391,8 +391,8 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
         then:
         def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-        testTagNames.contains("scenario_outline")
-        testTagNames.contains("example_two")
+        testTagNames.contains("scenario outline")
+        testTagNames.contains("example two")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS]
 
     }
@@ -408,8 +408,8 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
 		then:
 		def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-		testTagNames.contains("example_one")
-		testTagNames.contains("example_two")
+		testTagNames.contains("example one")
+		testTagNames.contains("example two")
 		testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS, SUCCESS, SUCCESS]
 	}
 
@@ -424,8 +424,8 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
 		then:
 		def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-		testTagNames.contains("example_one")
-		testTagNames.contains("example_two")
+		testTagNames.contains("example one")
+		testTagNames.contains("example two")
 		testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS, SUCCESS, SUCCESS]
 	}
 
@@ -440,7 +440,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
 		then:
 		def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-		testTagNames.contains("example_one")
+		testTagNames.contains("example one")
 		testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS]
 	}
 
@@ -455,8 +455,8 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
         then:
         def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-        testTagNames.contains("example_one")
-        testTagNames.contains("example_two")
+        testTagNames.contains("example one")
+        testTagNames.contains("example two")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS, SUCCESS, SUCCESS]
    }
 
@@ -471,8 +471,8 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
         then:
         def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-        testTagNames.contains("example_one")
-        testTagNames.contains("example_two")
+        testTagNames.contains("example one")
+        testTagNames.contains("example two")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS, SUCCESS, SUCCESS]
    }
 
@@ -487,7 +487,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
 		then:
 		def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-		testTagNames.contains("example_two")
+		testTagNames.contains("example two")
 		testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS]
 	}
 
@@ -502,7 +502,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
         then:
         def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-        testTagNames.contains("example_two")
+        testTagNames.contains("example two")
         testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS, SUCCESS]
    }
 
@@ -518,7 +518,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 		then:
         recordedTestOutcomes.size() == 1
 		def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-		testTagNames.contains("example_one")
+		testTagNames.contains("example one")
 		testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS]
 	}
 
@@ -548,7 +548,7 @@ class WhenCreatingSerenityTestOutcomesForTableDrivenScenarios extends Specificat
 
 		then:
 		def testTagNames = testOutcome.getTags().collect{testTag-> testTag.normalisedName()};
-		testTagNames.contains("example_one")
+		testTagNames.contains("example one")
 		testOutcome.dataTable.rows.collect { it.result } == [SUCCESS, SUCCESS]
 	}
 
