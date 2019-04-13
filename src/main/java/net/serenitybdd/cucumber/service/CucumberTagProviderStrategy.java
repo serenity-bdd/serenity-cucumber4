@@ -1,7 +1,6 @@
 package net.serenitybdd.cucumber.service;
 
 
-import net.thucydides.core.ThucydidesSystemProperty;
 import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.requirements.FileSystemRequirementsTagProvider;
 import net.thucydides.core.statistics.service.ContextTagProvider;
@@ -32,9 +31,8 @@ public class CucumberTagProviderStrategy implements TagProviderStrategy {
 
     @Override
     public Iterable<? extends TagProvider> getTagProviders() {
-        String rootDirectory = ThucydidesSystemProperty.SERENITY_REQUIREMENTS_DIR.from(environmentVariables,"features");
         return Arrays.asList(
-                new FileSystemRequirementsTagProvider(environmentVariables, rootDirectory),
+                new FileSystemRequirementsTagProvider(environmentVariables),
                 new InjectedTagProvider(environmentVariables),
                 new ContextTagProvider());
     }
