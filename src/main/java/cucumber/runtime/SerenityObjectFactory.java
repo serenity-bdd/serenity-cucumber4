@@ -18,13 +18,18 @@ public class SerenityObjectFactory implements ObjectFactory {
 
     private final Set<Class<?>> classes = Collections.synchronizedSet(new HashSet<Class<?>>());
 
-    private final Map<Class<?>, Object> instances = Collections.synchronizedMap(new HashMap<Class<?>, Object>());
+    private final ThreadLocal<Map<Class<?>, Object>> instances = new ThreadLocal<Map<Class<?>, Object>>() {
+        @Override
+        protected Map<Class<?>, Object> initialValue() {
+            return new HashMap<>();
+        }
+    };
 
     public void start() {
     }
 
     public void stop() {
-        instances.clear();
+        instances.get().clear();
         Serenity.done(false);
     }
 
@@ -36,7 +41,7 @@ public class SerenityObjectFactory implements ObjectFactory {
     }
 
     public <T> T getInstance(Class<T> type) {
-        T instance = type.cast(instances.get(type));
+        T instance = type.cast(instances.get().get(type));
         if (instance == null) {
             instance = cacheNewInstance(type);
         }
@@ -49,7 +54,7 @@ public class SerenityObjectFactory implements ObjectFactory {
      */
     private <T> T cacheNewInstance(Class<T> type) {
         T instance = newInstance(type);
-        instances.put(type, instance);
+        instances.get().put(type, instance);
         return instance;
     }
 
