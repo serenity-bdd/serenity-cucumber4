@@ -5,6 +5,7 @@ import cucumber.api.PickleStepTestStep;
 import cucumber.api.Plugin;
 import cucumber.api.Result;
 import cucumber.api.event.*;
+import cucumber.api.event.EventListener;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import gherkin.ast.*;
@@ -46,7 +47,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  *
  * @author L.Carausu (liviu.carausu@gmail.com)
  */
-public class SerenityReporter implements  Plugin,ConcurrentEventListener {
+public class SerenityReporter implements  Plugin, EventListener {
 
     private static final String OPEN_PARAM_CHAR = "\uff5f";
     private static final String CLOSE_PARAM_CHAR = "\uff60";
