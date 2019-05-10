@@ -5,7 +5,6 @@ import cucumber.api.PickleStepTestStep;
 import cucumber.api.Plugin;
 import cucumber.api.Result;
 import cucumber.api.event.*;
-import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import gherkin.ast.*;
 import gherkin.pickles.Argument;
@@ -76,25 +75,23 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     public SerenityReporter() {
         this.systemConfiguration = Injectors.getInjector().getInstance(Configuration.class);
         baseStepListeners = Collections.synchronizedList(new ArrayList<>());
-        initLineFilters(new MultiLoader(SerenityReporter.class.getClassLoader()));
     }
 
     public SerenityReporter(Configuration systemConfiguration, ResourceLoader resourceLoader) {
         this.systemConfiguration = systemConfiguration;
         baseStepListeners = Collections.synchronizedList(new ArrayList<>());
-        initLineFilters(new MultiLoader(SerenityReporter.class.getClassLoader()));
     }
 
     private StepEventBus getStepEventBus(String featurePath){
-        if (CONTEXT.get().lineFilters.containsKey(featurePath)) {
-            featurePath += ":" + CONTEXT.get().lineFilters.get(featurePath).get(0).longValue();
+        if (CONTEXT.get().getLineFilters().containsKey(featurePath)) {
+            featurePath += ":" + CONTEXT.get().getLineFilters().get(featurePath).get(0).longValue();
         }
         return StepEventBus.eventBusFor(featurePath);
     }
 
     private void setStepEventBus(String featurePath){
-        if (CONTEXT.get().lineFilters.containsKey(featurePath)) {
-            featurePath += ":" + CONTEXT.get().lineFilters.get(featurePath).get(0).longValue();
+        if (CONTEXT.get().getLineFilters().containsKey(featurePath)) {
+            featurePath += ":" + CONTEXT.get().getLineFilters().get(featurePath).get(0).longValue();
         }
         StepEventBus.setCurrentBusToEventBusFor(featurePath);
     }
@@ -407,40 +404,28 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
         }
     }
 
-    private void initLineFilters(ResourceLoader resourceLoader) {
-        if (CONTEXT.get().lineFilters == null) {
-            Map<String, List<Long>> lineFiltersFromRuntime = CucumberWithSerenity.currentRuntimeOptions()
-                    .getLineFilters();
-            if (lineFiltersFromRuntime == null) {
-                CONTEXT.get().lineFilters = new HashMap<>();
-            } else {
-                CONTEXT.get().lineFilters = lineFiltersFromRuntime;
-            }
-        }
-    }
-
     private boolean examplesAreNotExcludedByLinesFilter(Examples examples) {
-        if (CONTEXT.get().lineFilters.isEmpty()) {
+        if (CONTEXT.get().getLineFilters().isEmpty()) {
             return true;
         }
 
-        if (!CONTEXT.get().lineFilters.containsKey(currentFeaturePath())) {
+        if (!CONTEXT.get().getLineFilters().containsKey(currentFeaturePath())) {
             return false;
         } else {
             return examples.getTableBody().stream().anyMatch(
-                    row -> CONTEXT.get().lineFilters.get(currentFeaturePath()).contains((long) row.getLocation().getLine()));
+                    row -> CONTEXT.get().getLineFilters().get(currentFeaturePath()).contains((long) row.getLocation().getLine()));
         }
     }
 
     private boolean tableRowIsNotExcludedByLinesFilter(TableRow tableRow) {
-        if (CONTEXT.get().lineFilters.isEmpty()) {
+        if (CONTEXT.get().getLineFilters().isEmpty()) {
             return true;
         }
 
-        if (!CONTEXT.get().lineFilters.containsKey(currentFeaturePath())) {
+        if (!CONTEXT.get().getLineFilters().containsKey(currentFeaturePath())) {
             return false;
         } else {
-            return CONTEXT.get().lineFilters.get(currentFeaturePath()).contains((long) tableRow.getLocation().getLine());
+            return CONTEXT.get().getLineFilters().get(currentFeaturePath()).contains((long) tableRow.getLocation().getLine());
         }
     }
 
@@ -953,6 +938,24 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
         Context() {
             this.stepQueue = new LinkedList<>();
             this.testStepQueue = new LinkedList<>();
+        }
+        
+        public Map<String, List<Long>> getLineFilters() {
+            if (lineFilters == null) {
+                initLineFilters();
+            }
+            
+            return lineFilters;
+        }
+
+        private void initLineFilters() {
+            Map<String, List<Long>> lineFiltersFromRuntime = CucumberWithSerenity.currentRuntimeOptions()
+              .getLineFilters();
+            if (lineFiltersFromRuntime == null) {
+                lineFilters = new HashMap<>();
+            } else {
+                lineFilters = lineFiltersFromRuntime;
+            }
         }
     }
 }
