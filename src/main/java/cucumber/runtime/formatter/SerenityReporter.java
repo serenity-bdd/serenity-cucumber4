@@ -63,29 +63,26 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     private Configuration systemConfiguration;
     private final RuntimeOptions runtimeOptions;
 
-    private final List<BaseStepListener> baseStepListeners;
-
     private final ConcurrentTestSourcesModel testSources = new ConcurrentTestSourcesModel();
 
     private final static String FEATURES_ROOT_PATH = "features";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SerenityReporter.class);
 
-
+    private final List<BaseStepListener> allBaseStepListeners = Collections.synchronizedList(new ArrayList<>());
+    
     /**
      * Constructor automatically called by cucumber when class is specified as plugin
      * in @CucumberOptions.
      */
     public SerenityReporter() {
         this.systemConfiguration = Injectors.getInjector().getInstance(Configuration.class);
-        baseStepListeners = Collections.synchronizedList(new ArrayList<>());
         this.runtimeOptions = CucumberWithSerenity.currentRuntimeOptions();
     }
 
     public SerenityReporter(Configuration systemConfiguration, ResourceLoader resourceLoader, RuntimeOptions runtimeOptions) {
         this.systemConfiguration = systemConfiguration;
         this.runtimeOptions = runtimeOptions;
-        baseStepListeners = Collections.synchronizedList(new ArrayList<>());
     }
 
     private StepEventBus getStepEventBus(String featurePath){
@@ -107,7 +104,8 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
             return;
         }
         SerenityListeners listeners = new SerenityListeners(getStepEventBus(featurePath), systemConfiguration);
-        baseStepListeners.add(listeners.getBaseStepListener());
+        CONTEXT.get().baseStepListeners.add(listeners.getBaseStepListener());
+        allBaseStepListeners.add(listeners.getBaseStepListener());
     }
 
     private EventHandler<TestSourceRead> testSourceReadHandler = event -> handleTestSourceRead(event);
@@ -902,8 +900,10 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     }
 
     public List<TestOutcome> getAllTestOutcomes() {
-        return baseStepListeners.stream().map(BaseStepListener::getTestOutcomes).flatMap(List::stream)
-                .collect(Collectors.toList());
+        List<TestOutcome> testOutcomes = allBaseStepListeners.stream().map(BaseStepListener::getTestOutcomes).flatMap(List::stream)
+          .collect(toList());
+        allBaseStepListeners.clear();
+        return testOutcomes;
     }
 
     private String normalized(String value) {
@@ -946,6 +946,8 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
         private Map<String, List<Long>> lineFilters;
 
         private List<Tag> scenarioTags;
+
+        private final List<BaseStepListener> baseStepListeners = new ArrayList<>();
         
         Context(RuntimeOptions runtimeOptions) {
             this.stepQueue = new LinkedList<>();
