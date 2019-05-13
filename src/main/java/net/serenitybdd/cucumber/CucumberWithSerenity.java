@@ -70,7 +70,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
     private final ThreadLocalRunnerSupplier runnerSupplier;
     private final Filters filters;
     private final JUnitOptions junitOptions;
-    private static ThreadLocal<RuntimeOptions> RUNTIME_OPTIONS = new ThreadLocal<>();
+    private static volatile RuntimeOptions RUNTIME_OPTIONS;
     /**
      * Constructor called by JUnit.
      *
@@ -100,7 +100,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         Plugins plugins = new Plugins(classLoader, new PluginFactory(), bus, runtimeOptions);
 
         Configuration systemConfiguration = Injectors.getInjector().getInstance(Configuration.class);
-        SerenityReporter reporter = new SerenityReporter(systemConfiguration, resourceLoader);
+        SerenityReporter reporter = new SerenityReporter(systemConfiguration, resourceLoader, runtimeOptions);
         addSerenityReporterPlugin(plugins,reporter);
 
         this.runnerSupplier = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier);
@@ -120,11 +120,11 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
     }
 
     public static void setRuntimeOptions(RuntimeOptions runtimeOptions) {
-        RUNTIME_OPTIONS.set(runtimeOptions);
+        RUNTIME_OPTIONS = runtimeOptions;
     }
 
     public static RuntimeOptions currentRuntimeOptions() {
-        return RUNTIME_OPTIONS.get();
+        return RUNTIME_OPTIONS;
     }
 
     private static Collection<String> environmentSpecifiedTags(List<?> existingTags) {
@@ -162,7 +162,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         for (CucumberFeature feature : features) {
             feature.sendTestSourceRead(bus);
         }
-        SerenityReporter serenityReporter = new SerenityReporter(systemConfiguration, resourceLoader);
+        SerenityReporter serenityReporter = new SerenityReporter(systemConfiguration, resourceLoader, runtimeOptions);
         Runtime runtime = Runtime.builder().withResourceLoader(resourceLoader).withClassFinder(classFinder).
                 withClassLoader(classLoader).withRuntimeOptions(runtimeOptions).
                 withAdditionalPlugins(serenityReporter).
