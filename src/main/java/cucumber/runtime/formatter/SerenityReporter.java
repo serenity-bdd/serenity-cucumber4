@@ -145,7 +145,7 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     }
 
     private void handleTestSourceRead(TestSourceRead event) {
-        LOGGER.info("TestSourceRead " + event.uri);
+        LOGGER.debug("TestSourceRead " + event.uri);
         testSources.addTestSourceReadEvent(event.uri, event);
     }
 
@@ -242,18 +242,6 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
         }
     }
     
-    private String astNodeToString(TestSourcesModel.AstNode node) {
-        if (node == null) {
-            return "null";
-        }
-        
-        if (node.node instanceof ScenarioDefinition) {
-            return ((ScenarioDefinition) node.node).getName();
-        } else {
-            return node.node.getLocation().getLine() + ":" + node.node.getLocation().getColumn();
-        }
-    }
-
     private void handleTestCaseFinished(TestCaseFinished event) {
         if (CONTEXT.get().examplesRunning) {
             handleResult(event.result);
