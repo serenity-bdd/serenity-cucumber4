@@ -1,4 +1,4 @@
-@driver:htmlunit
+@driver:firefox
 Feature: Use other browser
 
 Scenario Outline: A scenario that uses selenium
