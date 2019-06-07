@@ -287,16 +287,17 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
             handleResult(event.result);
         }
 
-        if (event.result.is(Result.Type.FAILED) && noAnnotatedResultIdDefinedFor(event)) {
-            getStepEventBus(event.testCase.getUri()).testFailed(event.result.getError());
-        } else {
-            getStepEventBus(event.testCase.getUri()).testFinished();
-        }
-
-        stepQueue.clear();
         if (examplesRunning) {
             finishExample();
         }
+
+        if (event.result.is(Result.Type.FAILED) && noAnnotatedResultIdDefinedFor(event)) {
+            getStepEventBus(event.testCase.getUri()).testFailed(event.result.getError());
+        } else {
+            getStepEventBus(event.testCase.getUri()).testFinished(examplesRunning);
+        }
+
+        stepQueue.clear();
     }
 
     private boolean noAnnotatedResultIdDefinedFor(TestCaseFinished event) {
