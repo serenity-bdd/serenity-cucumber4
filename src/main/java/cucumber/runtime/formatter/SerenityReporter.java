@@ -1,5 +1,6 @@
 package cucumber.runtime.formatter;
 
+import com.google.common.collect.Lists;
 import cucumber.api.HookTestStep;
 import cucumber.api.PickleStepTestStep;
 import cucumber.api.Plugin;
@@ -46,7 +47,7 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
  *
  * @author L.Carausu (liviu.carausu@gmail.com)
  */
-public class SerenityReporter implements  Plugin,ConcurrentEventListener {
+public class SerenityReporter implements Plugin, ConcurrentEventListener {
 
     private static final String OPEN_PARAM_CHAR = "\uff5f";
     private static final String CLOSE_PARAM_CHAR = "\uff60";
@@ -94,6 +95,7 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SerenityReporter.class);
 
+    private ManualScenarioChecker manualScenarioDateChecker;
 
     /**
      * Constructor automatically called by cucumber when class is specified as plugin
@@ -101,6 +103,7 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
      */
     public SerenityReporter() {
         this.systemConfiguration = Injectors.getInjector().getInstance(Configuration.class);
+        this.manualScenarioDateChecker = new ManualScenarioChecker(systemConfiguration.getEnvironmentVariables());
         this.stepQueue = new LinkedList<>();
         this.testStepQueue = new LinkedList<>();
         baseStepListeners = Collections.synchronizedList(new ArrayList<>());
@@ -109,20 +112,21 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     public SerenityReporter(Configuration systemConfiguration, ResourceLoader resourceLoader) {
         this.systemConfiguration = systemConfiguration;
+        this.manualScenarioDateChecker = new ManualScenarioChecker(systemConfiguration.getEnvironmentVariables());
         this.stepQueue = new LinkedList<>();
         this.testStepQueue = new LinkedList<>();
         baseStepListeners = Collections.synchronizedList(new ArrayList<>());
         initLineFilters(new MultiLoader(SerenityReporter.class.getClassLoader()));
     }
 
-    private StepEventBus getStepEventBus(String featurePath){
+    private StepEventBus getStepEventBus(String featurePath) {
         if (lineFilters.containsKey(featurePath)) {
             featurePath += ":" + lineFilters.get(featurePath).get(0).longValue();
         }
         return StepEventBus.eventBusFor(featurePath);
     }
 
-    private void setStepEventBus(String featurePath){
+    private void setStepEventBus(String featurePath) {
         if (lineFilters.containsKey(featurePath)) {
             featurePath += ":" + lineFilters.get(featurePath).get(0).longValue();
         }
@@ -319,8 +323,8 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
 
     private void handleTestStepStarted(TestStepStarted event) {
         if (!(event.testStep instanceof HookTestStep)) {
-            if(event.testStep instanceof PickleStepTestStep) {
-                PickleStepTestStep pickleTestStep = (PickleStepTestStep)event.testStep;
+            if (event.testStep instanceof PickleStepTestStep) {
+                PickleStepTestStep pickleTestStep = (PickleStepTestStep) event.testStep;
                 TestSourcesModel.AstNode astNode = testSources.getAstNode(currentFeaturePath(), pickleTestStep.getStepLine());
                 if (astNode != null) {
                     Step step = (Step) astNode.node;
@@ -671,11 +675,30 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     }
 
     private List<TestTag> convertCucumberTags(List<Tag> cucumberTags) {
-        List<TestTag> tags = new ArrayList<>();
-        for (Tag tag : cucumberTags) {
-            tags.add(TestTag.withValue(tag.getName().substring(1)));
+
+        cucumberTags = completeManualTagsIn(cucumberTags);
+
+        return cucumberTags.stream()
+                .map(tag -> TestTag.withValue(tag.getName().substring(1)))
+                .collect(toList());
+    }
+
+    private List<Tag> completeManualTagsIn(List<Tag> cucumberTags) {
+        if (unqualifiedManualTag(cucumberTags).isPresent() && doesNotContainResultTag(cucumberTags)) {
+            List<Tag> updatedTags = Lists.newArrayList(cucumberTags);
+            updatedTags.add(new Tag(unqualifiedManualTag(cucumberTags).get().getLocation(),"@manual:pending"));
+            return updatedTags;
+        } else {
+            return cucumberTags;
         }
-        return new ArrayList(tags);
+    }
+
+    private boolean doesNotContainResultTag(List<Tag> tags) {
+        return !tags.stream().noneMatch(tag -> tag.getName().startsWith("@manual:"));
+    }
+
+    private Optional<Tag> unqualifiedManualTag(List<Tag> tags) {
+        return tags.stream().filter(tag -> tag.getName().equalsIgnoreCase("@manual")).findFirst();
     }
 
     private List<String> extractJiraIssueTags(List<Tag> cucumberTags) {
@@ -692,7 +715,7 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
         }
         return issues;
     }
-    
+
     private void startExample(Integer lineNumber) {
         Map<String, String> data = exampleRows().get(lineNumber);
         getStepEventBus(currentFeaturePath()).clearStepFailures();
@@ -801,39 +824,26 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
             getStepEventBus(currentFeaturePath()).testPending();
         } else if (isSkippedOrWIP(scenarioTags)) {
             getStepEventBus(currentFeaturePath()).testSkipped();
-            getStepEventBus(currentFeaturePath()).getBaseStepListener().overrideResultTo(TestResult.SKIPPED);
+            updateCurrentScenarioResultTo(TestResult.SKIPPED);
         } else if (isIgnored(scenarioTags)) {
             getStepEventBus(currentFeaturePath()).testIgnored();
-            getStepEventBus(currentFeaturePath()).getBaseStepListener().overrideResultTo(TestResult.IGNORED);
+            updateCurrentScenarioResultTo(TestResult.IGNORED);
         }
     }
 
     private void updateManualResultsFrom(List<Tag> scenarioTags) {
         getStepEventBus(currentFeaturePath()).testIsManual();
+
         manualResultDefinedIn(scenarioTags).ifPresent(
-                result -> {
-                    if (result == TestResult.FAILURE) {
-
-                        String failureMessage = failureMessageFrom(currentScenarioDefinition.getDescription()).orElse("Failed manual test");
-
-                        getStepEventBus(currentFeaturePath()).getBaseStepListener()
-                                .latestTestOutcome().ifPresent( outcome -> outcome.setTestFailureMessage(failureMessage));
-                    }
-                    getStepEventBus(currentFeaturePath()).getBaseStepListener().overrideResultTo(result);
-                }
+                testResult ->
+                        UpdateManualScenario.forScenario(currentScenarioDefinition.getDescription())
+                                .inContext(getStepEventBus(currentFeaturePath()).getBaseStepListener(), systemConfiguration.getEnvironmentVariables())
+                                .updateManualScenario(testResult, scenarioTags)
         );
     }
 
-    private Optional<String> failureMessageFrom(String description) {
-        if (description == null || description.isEmpty()) {
-            return Optional.empty();
-        }
-        String firstLine = description.split("\r?\n")[0];
-        if (firstLine.trim().toLowerCase().startsWith("failure:")) {
-            return Optional.of("Failed manual test: " + firstLine.trim().substring(8).trim());
-        } else {
-            return Optional.empty();
-        }
+    private void updateCurrentScenarioResultTo(TestResult pending) {
+        getStepEventBus(currentFeaturePath()).getBaseStepListener().overrideResultTo(pending);
     }
 
     private void failed(String stepTitle, Throwable cause) {
@@ -887,7 +897,7 @@ public class SerenityReporter implements  Plugin,ConcurrentEventListener {
     private String stepTitleFrom(Step currentStep, cucumber.api.TestStep testStep) {
         if (currentStep != null && testStep instanceof PickleStepTestStep)
             return currentStep.getKeyword()
-                    + ((PickleStepTestStep)testStep).getPickleStep().getText()
+                    + ((PickleStepTestStep) testStep).getPickleStep().getText()
                     + embeddedTableDataIn((PickleStepTestStep) testStep);
         return "";
     }
