@@ -1,19 +1,67 @@
-## Serenity Cucumber Integration
+# Getting started with Serenity and Cucumber 4
 
-This module lets you produce Serenity reports using Cucumber JVM 4.2.0. You run your tests as normal,
-but using the *CucumberWithSerenity* runner, e.g.:
+Serenity BDD is a library that makes it easier to write high quality automated acceptance tests, with powerful reporting and living documentation features. It has strong support for both web testing with Selenium, and API testing using RestAssured. 
 
-```java
-@RunWith(CucumberWithSerenity.class)
-@CucumberOptions(features="src/test/resources/samples/myfeature.feature")
-public class SimpleTableScenario {}
+Serenity strongly encourages good test automation design, and supports several design patterns, including classic Page Objects, the newer Lean Page Objects/ Action Classes approach, and the more sophisticated and flexible Screenplay pattern.
+
+## The starter project
+The best place to start with Serenity and Cucumber is to clone or download the starter project on Github ([https://github.com/serenity-bdd/serenity-cucumber4-starter](https://github.com/serenity-bdd/serenity-cucumber4-starter)). This project gives you a basic project setup, along with some sample tests and supporting classes. There are two versions to choose from. The master branch uses a more classic approach, using action classes and lightweight page objects, whereas the **[screenplay](https://github.com/serenity-bdd/serenity-cucumber4-starter/tree/screenplay)** branch shows the same sample test implemented using Screenplay.
+
+### Adding the Cucumber 4 dependency
+Serenity seamlessly supports both Cucumber 2.x and Cucumber 4. However, this flexibility requires a little tweaking in the build dependencies. 
+
+If you are using Maven, you need to do the following:
+- exclude the default `cucumber-core` dependency from your `serenity-core` dependency
+- Replace your `serenity-cucumber` dependency with the `serenity-cucumber4` dependency
+- Add dependencies on the Cucumber 4.x version of `cucumber-java` and `cucumber-junit` into your project
+
+An example of the correctly configured dependencies is shown below:
+```xml
+<dependency>
+    <groupId>net.serenity-bdd</groupId>
+    <artifactId>serenity-core</artifactId>
+    <version>2.0.70</version>
+    <scope>test</scope>
+    <exclusions>
+        <exclusion>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-core</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+    <groupId>net.serenity-bdd</groupId>
+    <artifactId>serenity-cucumber4</artifactId>
+    <version>1.0.21</version>
+    <scope>test</scope>
+</dependency>
+<dependency>
+    <groupId>io.cucumber</groupId>
+    <artifactId>cucumber-java</artifactId>
+    <version>4.2.0</version>
+</dependency>
+<dependency>
+    <groupId>io.cucumber</groupId>
+    <artifactId>cucumber-junit</artifactId>
+    <version>4.2.0</version>
+</dependency>
 ```
 
-## Upgrading from Cucumber-JVM 2.x.x
+If you are using Gradle, you need to ensure that the 4.x version of `cucumber-core` is used using the _resolutionStrategy_ element, and also add the Cucumber 4.x version of `cucumber-java` and `cucumber-junit` dependencies as mentioned above:
+```Gradle
+configurations.all {
+    resolutionStrategy {
+        force "io.cucumber:cucumber-core:4.2.0"
+    }
+}
 
-https://cucumber.io/blog/2018/05/19/announcing-cucumber-jvm-3-0-0
-https://cucumber.io/blog/2018/09/24/announcing-cucumber-jvm-4-0-0
-https://cucumber.io/blog/2018/10/31/announcing-cucumber-jvm-4-2-0
+dependencies {
+    testCompile "net.serenity-bdd:serenity-core:2.0.70",
+                "net.serenity-bdd:serenity-cucumber4:1.0.21",
+                "io.cucumber:cucumber-core:4.2.0",
+                "io.cucumber:cucumber-junit:4.2.0"
+}
+```
 
 ## Found a bug? Please read this before you raise an issue.
 
