@@ -11,6 +11,7 @@ import gherkin.ast.ScenarioOutline;
 import net.thucydides.core.util.Inflector;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -20,10 +21,10 @@ import static java.util.stream.Collectors.toList;
 
 public class ScenarioLineCountStatistics implements TestStatistics {
 
-    private final List<String> featurePaths;
+    private final List<URI> featurePaths;
     private final List<TestScenarioResult> results;
 
-    private ScenarioLineCountStatistics(List<String> featurePaths) {
+    private ScenarioLineCountStatistics(List<URI> featurePaths) {
         this.featurePaths = featurePaths;
         ResourceLoader resourceLoader = new MultiLoader(CucumberSuiteSlicer.class.getClassLoader());
         this.results = new FeatureLoader(resourceLoader).load(featurePaths).stream()
@@ -32,11 +33,11 @@ public class ScenarioLineCountStatistics implements TestStatistics {
             .collect(toList());
     }
 
-    public static ScenarioLineCountStatistics fromFeaturePath(String featurePaths) {
+    public static ScenarioLineCountStatistics fromFeaturePath(URI featurePaths) {
         return fromFeaturePaths(asList(featurePaths));
     }
 
-    public static ScenarioLineCountStatistics fromFeaturePaths(List<String> featurePaths) {
+    public static ScenarioLineCountStatistics fromFeaturePaths(List<URI> featurePaths) {
         return new ScenarioLineCountStatistics(featurePaths);
     }
 

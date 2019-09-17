@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.is;
@@ -15,7 +17,11 @@ public class ScenarioLineCountStatisticsTest {
 
     @Before
     public void setup() {
-        stats = ScenarioLineCountStatistics.fromFeaturePath("classpath:samples");
+        try {
+            stats = ScenarioLineCountStatistics.fromFeaturePath(new URI("classpath:samples"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
     }
 
