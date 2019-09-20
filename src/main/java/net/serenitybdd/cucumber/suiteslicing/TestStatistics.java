@@ -3,6 +3,7 @@ package net.serenitybdd.cucumber.suiteslicing;
 import net.thucydides.core.util.EnvironmentVariables;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.List;
 
 import static net.thucydides.core.ThucydidesSystemProperty.SERENITY_TEST_STATISTICS_DIR;
@@ -13,7 +14,8 @@ public interface TestStatistics {
 
     List<TestScenarioResult> records();
 
-    public static TestStatistics from(EnvironmentVariables environmentVariables, List<String> featurePaths) {
+    
+    public static TestStatistics from(EnvironmentVariables environmentVariables, List<URI> featurePaths) {
         String directory = environmentVariables.getProperty(SERENITY_TEST_STATISTICS_DIR);
         if (directory == null) {
             return ScenarioLineCountStatistics.fromFeaturePaths(featurePaths);
@@ -21,5 +23,6 @@ public interface TestStatistics {
             return MultiRunTestStatistics.fromRelativePath(directory);
         }
     }
+
 
 }

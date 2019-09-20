@@ -4,6 +4,8 @@ package net.serenitybdd.cucumber.suiteslicing;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.net.URI;
+
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
@@ -16,9 +18,9 @@ public class CucumberSuiteSlicerTest {
     MatchingCucumberScenario expectedScenario2;
 
     @Before
-    public void setup() {
+    public void setup() throws Exception {
         testStatistics = new DummyStatsOfWeightingOne();
-        cucumberSuiteSlicer = new CucumberSuiteSlicer(asList("classpath:samples/simple_table_based_scenario.feature"), testStatistics);
+        cucumberSuiteSlicer = new CucumberSuiteSlicer(asList(new URI("classpath:samples/simple_table_based_scenario.feature")), testStatistics);
         expectedScenario1 = MatchingCucumberScenario.with()
             .featurePath("simple_table_based_scenario.feature")
             .feature("Buying things - with tables")

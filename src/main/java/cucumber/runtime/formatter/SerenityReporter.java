@@ -34,8 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static cucumber.runtime.formatter.TaggedScenario.*;
 import static java.util.stream.Collectors.toList;
@@ -89,7 +91,7 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
 
     private boolean addingScenarioOutlineSteps = false;
 
-    private Map<String, List<Long>> lineFilters;
+    private Map<URI, Set<Integer>> lineFilters;
 
     private List<Tag> scenarioTags;
 
@@ -120,17 +122,37 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
     }
 
     private StepEventBus getStepEventBus(String featurePath) {
-        if (lineFilters.containsKey(featurePath)) {
-            featurePath += ":" + lineFilters.get(featurePath).get(0).longValue();
-        }
+        featurePath = addFeaturePathPrefixIfNecessary(featurePath);
         return StepEventBus.eventBusFor(featurePath);
     }
 
+    private String addFeaturePathPrefixIfNecessary(String featurePath) {
+        URI matchingURI = getURIForFeaturePath(lineFilters,featurePath);
+        if (matchingURI != null) {
+            Set<Integer> allLineNumbersSet = lineFilters.get(matchingURI);
+            List<Integer> allLineNumbersList = allLineNumbersSet.stream().collect(toList());
+            long featurePathPrefix = allLineNumbersList.get(0) ;
+            featurePath += ":" + featurePathPrefix;
+        } 
+        return featurePath;
+    }
+
     private void setStepEventBus(String featurePath) {
-        if (lineFilters.containsKey(featurePath)) {
-            featurePath += ":" + lineFilters.get(featurePath).get(0).longValue();
-        }
+        featurePath = addFeaturePathPrefixIfNecessary(featurePath);
         StepEventBus.setCurrentBusToEventBusFor(featurePath);
+    }
+
+    private URI getURIForFeaturePath(Map<URI,Set<Integer>> map, String featurePath) {
+        for(URI currentURI : map.keySet()) {
+            if(featurePath.equals(currentURI.toString())) {
+                return currentURI;
+            }
+        }
+        return null;
+    }
+
+    private boolean lineFiltersContainFeaturePath(String featurePath) {
+        return getURIForFeaturePath(lineFilters,featurePath) != null;
     }
 
     private void initialiseThucydidesListenersFor(String featurePath) {
@@ -248,8 +270,7 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
     }
 
     private void handleTestCaseStarted(TestCaseStarted event) {
-
-        //initLineFilters(new MultiLoader(SerenityReporter.class.getClassLoader()));
+        
         currentFeaturePathIs(event.testCase.getUri());
         setStepEventBus(event.testCase.getUri());
 
@@ -440,14 +461,14 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
         }
     }
 
+  
     private void initLineFilters(ResourceLoader resourceLoader) {
         if (lineFilters == null) {
-            Map<String, List<Long>> lineFiltersFromRuntime = CucumberWithSerenity.currentRuntimeOptions()
-                    .getLineFilters();
+            Map<URI, Set<Integer>> lineFiltersFromRuntime = CucumberWithSerenity.currentRuntimeOptions().getLineFilters();
             if (lineFiltersFromRuntime == null) {
-                lineFilters = new HashMap<>();
+                this.lineFilters = new HashMap<>();
             } else {
-                lineFilters = lineFiltersFromRuntime;
+                this.lineFilters = lineFiltersFromRuntime;
             }
         }
     }
@@ -456,12 +477,12 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
         if (lineFilters.isEmpty()) {
             return true;
         }
-
-        if (!lineFilters.containsKey(currentFeaturePath())) {
+        if (lineFiltersContainFeaturePath(currentFeaturePath())) {
             return false;
         } else {
+            URI uriForFeaturePath = getURIForFeaturePath(lineFilters, currentFeaturePath());
             return examples.getTableBody().stream().anyMatch(
-                    row -> lineFilters.get(currentFeaturePath()).contains((long) row.getLocation().getLine()));
+                      row -> lineFilters.get(uriForFeaturePath).contains(row.getLocation().getLine()));
         }
     }
 
@@ -469,11 +490,11 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
         if (lineFilters.isEmpty()) {
             return true;
         }
-
-        if (!lineFilters.containsKey(currentFeaturePath())) {
+        if (lineFiltersContainFeaturePath(currentFeaturePath())) {
             return false;
         } else {
-            return lineFilters.get(currentFeaturePath()).contains((long) tableRow.getLocation().getLine());
+            URI uriForFeaturePath = getURIForFeaturePath(lineFilters, currentFeaturePath());
+            return lineFilters.get(uriForFeaturePath).contains(tableRow.getLocation().getLine());
         }
     }
 
