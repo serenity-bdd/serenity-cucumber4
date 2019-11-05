@@ -37,6 +37,7 @@ import org.junit.runner.manipulation.NoTestsRemainException;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
+import org.junit.runners.model.RunnerScheduler;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,9 +69,13 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
     private final List<FeatureRunner> children = new ArrayList<FeatureRunner>();
     private final EventBus bus;
     private final ThreadLocalRunnerSupplier runnerSupplier;
-    private final Filters filters;
-    private final JUnitOptions junitOptions;
     private static ThreadLocal<RuntimeOptions> RUNTIME_OPTIONS = new ThreadLocal<>();
+
+    private final List<CucumberFeature> features;
+    private final Plugins plugins;
+
+    private boolean multiThreadingAssumed = false;
+
     /**
      * Constructor called by JUnit.
      *
@@ -85,6 +90,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         RuntimeOptionsFactory runtimeOptionsFactory = new RuntimeOptionsFactory(clazz);
         RuntimeOptions runtimeOptions = runtimeOptionsFactory.create();
         runtimeOptions.getTagFilters().addAll(environmentSpecifiedTags(runtimeOptions.getTagFilters()));
+        JUnitOptions junitOptions = new JUnitOptions(runtimeOptions.isStrict(), runtimeOptions.getJunitOptions());
 
         setRuntimeOptions(runtimeOptions);
 
@@ -92,30 +98,26 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         FeatureLoader featureLoader = new FeatureLoader(resourceLoader);
         FeaturePathFeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(featureLoader, runtimeOptions);
         // Parse the features early. Don't proceed when there are lexer errors
-        final List<CucumberFeature> features = featureSupplier.get();
+        this.features = featureSupplier.get();
 
         ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader, classLoader);
-        BackendSupplier backendSupplier = new BackendModuleBackendSupplier(resourceLoader, classFinder, runtimeOptions);
+
+        this.plugins = new Plugins(classLoader, new PluginFactory(),runtimeOptions);
         this.bus = new TimeServiceEventBus(TimeService.SYSTEM);
-        Plugins plugins = new Plugins(classLoader, new PluginFactory(), bus, runtimeOptions);
 
         Configuration systemConfiguration = Injectors.getInjector().getInstance(Configuration.class);
         SerenityReporter reporter = new SerenityReporter(systemConfiguration, resourceLoader);
         addSerenityReporterPlugin(plugins,reporter);
 
+        BackendSupplier backendSupplier = new BackendModuleBackendSupplier(resourceLoader, classFinder, runtimeOptions);
         this.runnerSupplier = new ThreadLocalRunnerSupplier(runtimeOptions, bus, backendSupplier);
-        this.filters = new Filters(runtimeOptions);
-        this.junitOptions = new JUnitOptions(runtimeOptions.isStrict(), runtimeOptions.getJunitOptions());
-        final StepDefinitionReporter stepDefinitionReporter = plugins.stepDefinitionReporter();
-
-        // Start the run before reading the features.
-        // Allows the test source read events to be broadcast properly
-        bus.send(new TestRunStarted(bus.getTime()));
-        for (CucumberFeature feature : features) {
-            feature.sendTestSourceRead(bus);
+        Filters filters = new Filters(runtimeOptions);
+        for (CucumberFeature cucumberFeature : features) {
+            FeatureRunner featureRunner = new FeatureRunner(cucumberFeature, filters, runnerSupplier, junitOptions);
+            if (!featureRunner.isEmpty()) {
+                children.add(featureRunner);
+            }
         }
-        runnerSupplier.get().reportStepDefinitions(stepDefinitionReporter);
-        addChildren(features);
     }
 
     public static void setRuntimeOptions(RuntimeOptions runtimeOptions) {
@@ -194,24 +196,43 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
 
     @Override
     protected Statement childrenInvoker(RunNotifier notifier) {
-        final Statement features = super.childrenInvoker(notifier);
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                features.evaluate();
-                bus.send(new TestRunFinished(bus.getTime()));
-            }
-        };
+        Statement runFeatures = super.childrenInvoker(notifier);
+        return new CucumberWithSerenity.RunCucumber(runFeatures);
     }
 
-    private void addChildren(List<CucumberFeature> cucumberFeatures) throws InitializationError {
-        for (CucumberFeature cucumberFeature : cucumberFeatures) {
-            FeatureRunner featureRunner = new FeatureRunner(cucumberFeature, filters, runnerSupplier, junitOptions);
-            if (!featureRunner.isEmpty()) {
-                children.add(featureRunner);
+    class RunCucumber extends Statement {
+        private final Statement runFeatures;
+
+        RunCucumber(Statement runFeatures) {
+            this.runFeatures = runFeatures;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            if (multiThreadingAssumed) {
+                plugins.setSerialEventBusOnEventListenerPlugins(bus);
+            } else {
+                plugins.setEventBusOnEventListenerPlugins(bus);
             }
+
+            bus.send(new TestRunStarted(bus.getTime(), bus.getTimeMillis()));
+            for (CucumberFeature feature : features) {
+                feature.sendTestSourceRead(bus);
+            }
+            StepDefinitionReporter stepDefinitionReporter = plugins.stepDefinitionReporter();
+            runnerSupplier.get().reportStepDefinitions(stepDefinitionReporter);
+            runFeatures.evaluate();
+            bus.send(new TestRunFinished(bus.getTime(), bus.getTimeMillis()));
         }
     }
+
+    @Override
+    public void setScheduler(RunnerScheduler scheduler) {
+        super.setScheduler(scheduler);
+        multiThreadingAssumed = true;
+    }
+
+
 
 
     @Override
