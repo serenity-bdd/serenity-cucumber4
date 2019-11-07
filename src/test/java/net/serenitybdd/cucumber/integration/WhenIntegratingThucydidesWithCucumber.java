@@ -1,6 +1,6 @@
 package net.serenitybdd.cucumber.integration;
 
-import net.serenitybdd.cucumber.CucumberWithSerenity;
+import io.cucumber.junit.CucumberWithSerenity;
 import org.junit.runner.RunWith;
 
 @RunWith(CucumberWithSerenity.class)

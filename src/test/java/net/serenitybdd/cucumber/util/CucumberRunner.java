@@ -1,10 +1,10 @@
 package net.serenitybdd.cucumber.util;
 
-import cucumber.runtime.RuntimeOptions;
-import cucumber.runtime.RuntimeOptionsFactory;
+import io.cucumber.core.options.CucumberOptionsAnnotationParser;
+import io.cucumber.core.options.RuntimeOptions;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
-import net.serenitybdd.cucumber.CucumberWithSerenity;
+import io.cucumber.junit.CucumberWithSerenity;
 import net.thucydides.core.configuration.SystemPropertiesConfiguration;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
@@ -33,8 +33,7 @@ public class CucumberRunner {
                                                                                EnvironmentVariables environmentVariables) {
         ClassLoader classLoader = testClass.getClassLoader();
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
-        RuntimeOptionsFactory runtimeOptionsFactory = new RuntimeOptionsFactory(testClass);
-        RuntimeOptions runtimeOptions = runtimeOptionsFactory.create();
+        RuntimeOptions runtimeOptions = new CucumberOptionsAnnotationParser().parse(testClass).build();
 
         Configuration systemConfiguration = new SystemPropertiesConfiguration(environmentVariables);
         systemConfiguration.setOutputDirectory(outputDirectory);
@@ -44,8 +43,7 @@ public class CucumberRunner {
     public static cucumber.runtime.Runtime serenityRunnerForCucumberTestRunner(Class testClass, Configuration systemConfiguration) {
         ClassLoader classLoader = testClass.getClassLoader();
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
-        RuntimeOptionsFactory runtimeOptionsFactory = new RuntimeOptionsFactory(testClass);
-        RuntimeOptions runtimeOptions = runtimeOptionsFactory.create();
+        RuntimeOptions runtimeOptions = new CucumberOptionsAnnotationParser().parse(testClass).build();
 
         return CucumberWithSerenity.createSerenityEnabledRuntime(resourceLoader, classLoader, runtimeOptions, systemConfiguration);
     }

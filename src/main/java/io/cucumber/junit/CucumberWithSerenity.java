@@ -1,4 +1,4 @@
-package net.serenitybdd.cucumber;
+package io.cucumber.junit;
 
 import cucumber.api.Plugin;
 import cucumber.api.StepDefinitionReporter;
@@ -17,16 +17,15 @@ import cucumber.runtime.formatter.SerenityReporter;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
-import cucumber.runtime.junit.Assertions;
-import cucumber.runtime.junit.FeatureRunner;
-import cucumber.runtime.junit.JUnitOptions;
+import io.cucumber.core.options.CucumberOptionsAnnotationParser;
+import io.cucumber.core.options.RuntimeOptions;
 import cucumber.runtime.model.CucumberFeature;
 import cucumber.runtime.model.FeatureLoader;
+import io.cucumber.core.options.RuntimeOptionsBuilder;
 import net.serenitybdd.cucumber.suiteslicing.CucumberSuiteSlicer;
 import net.serenitybdd.cucumber.suiteslicing.ScenarioFilter;
 import net.serenitybdd.cucumber.suiteslicing.TestStatistics;
 import net.serenitybdd.cucumber.suiteslicing.WeightedCucumberScenarios;
-import net.serenitybdd.cucumber.util.FeatureRunnerExtractors;
 import net.serenitybdd.cucumber.util.Splitter;
 import net.thucydides.core.ThucydidesSystemProperty;
 import net.thucydides.core.guice.Injectors;
@@ -87,11 +86,17 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         ClassLoader classLoader = clazz.getClassLoader();
         Assertions.assertNoCucumberAnnotatedMethods(clazz);
 
-        RuntimeOptionsFactory runtimeOptionsFactory = new RuntimeOptionsFactory(clazz);
-        RuntimeOptions runtimeOptions = runtimeOptionsFactory.create();
-        runtimeOptions.getTagFilters().addAll(environmentSpecifiedTags(runtimeOptions.getTagFilters()));
-        JUnitOptions junitOptions = new JUnitOptions(runtimeOptions.isStrict(), runtimeOptions.getJunitOptions());
+        RuntimeOptions runtimeOptions = new CucumberOptionsAnnotationParser().parse(clazz).build();
+        RuntimeOptionsBuilder runtimeOptionsBuilder =  new RuntimeOptionsBuilder();
+        Collection<String> tagFilters = environmentSpecifiedTags(runtimeOptions.getTagFilters());
+        for(String tagFilter : tagFilters ) {
+            runtimeOptionsBuilder.addTagFilter(tagFilter);
+        }
+        runtimeOptionsBuilder.build(runtimeOptions);
 
+        JUnitOptions junitOptions = new JUnitOptions();
+        junitOptions.setStrict(runtimeOptions.isStrict());
+        
         setRuntimeOptions(runtimeOptions);
 
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
@@ -149,7 +154,12 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
                                                        RuntimeOptions runtimeOptions,
                                                        Configuration systemConfiguration) {
         ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader, classLoader);
-        runtimeOptions.getTagFilters().addAll(environmentSpecifiedTags(runtimeOptions.getTagFilters()));
+        RuntimeOptionsBuilder runtimeOptionsBuilder = new RuntimeOptionsBuilder();
+        Collection<String> allTagFilters = environmentSpecifiedTags(runtimeOptions.getTagFilters());
+        for(String tagFilter :  allTagFilters) {
+            runtimeOptionsBuilder.addTagFilter(tagFilter);
+        }
+        runtimeOptionsBuilder.build(runtimeOptions);
         setRuntimeOptions(runtimeOptions);
 
         FeatureLoader featureLoader = new FeatureLoader(resourceLoader);

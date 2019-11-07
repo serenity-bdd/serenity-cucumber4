@@ -18,7 +18,7 @@ import io.cucumber.tagexpressions.TagExpressionParser;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.SerenityListeners;
 import net.serenitybdd.core.SerenityReports;
-import net.serenitybdd.cucumber.CucumberWithSerenity;
+import io.cucumber.junit.CucumberWithSerenity;
 import net.serenitybdd.cucumber.formatting.ScenarioOutlineDescription;
 import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.model.DataTable;
@@ -37,7 +37,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static cucumber.runtime.formatter.TaggedScenario.*;
 import static java.util.stream.Collectors.toList;

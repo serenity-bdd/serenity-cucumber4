@@ -1,6 +1,6 @@
 package net.serenitybdd.cucumber.model;
 
-import net.serenitybdd.cucumber.CucumberWithSerenity;
+import io.cucumber.junit.CucumberWithSerenity;
 
 import java.io.File;
 import java.io.IOException;

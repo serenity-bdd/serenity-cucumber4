@@ -1,8 +1,8 @@
-package net.serenitybdd.cucumber.util;
+package io.cucumber.junit;
 
 import java.lang.reflect.Field;
 
-import cucumber.runtime.junit.FeatureRunner;
+import io.cucumber.junit.FeatureRunner;
 
 public class FeatureRunnerExtractors {
 
