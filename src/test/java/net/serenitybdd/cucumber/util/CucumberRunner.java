@@ -1,10 +1,10 @@
 package net.serenitybdd.cucumber.util;
 
-import io.cucumber.core.options.CucumberOptionsAnnotationParser;
-import io.cucumber.core.options.RuntimeOptions;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
-import io.cucumber.junit.CucumberWithSerenity;
+import io.cucumber.core.options.CucumberOptionsAnnotationParser;
+import io.cucumber.core.options.RuntimeOptions;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.thucydides.core.configuration.SystemPropertiesConfiguration;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;

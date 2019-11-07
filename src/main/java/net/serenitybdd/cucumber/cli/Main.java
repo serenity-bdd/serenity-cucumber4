@@ -2,16 +2,15 @@ package net.serenitybdd.cucumber.cli;
 
 import cucumber.runtime.ClassFinder;
 import cucumber.runtime.Runtime;
-import io.cucumber.core.options.CommandlineOptionsParser;
-import io.cucumber.core.options.RuntimeOptions;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
-import io.cucumber.junit.CucumberWithSerenity;
+import io.cucumber.core.options.CommandlineOptionsParser;
+import io.cucumber.core.options.RuntimeOptions;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.serenitybdd.cucumber.CucumberWithSerenityRuntime;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
 

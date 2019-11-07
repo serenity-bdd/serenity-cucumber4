@@ -1,12 +1,11 @@
 package net.serenitybdd.cucumber.integration.intellij;
 
 import cucumber.runtime.Runtime;
-import io.cucumber.core.options.CommandlineOptionsParser;
-
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
+import io.cucumber.core.options.CommandlineOptionsParser;
 import io.cucumber.core.options.RuntimeOptions;
-import io.cucumber.junit.CucumberWithSerenity;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.webdriver.Configuration;
 

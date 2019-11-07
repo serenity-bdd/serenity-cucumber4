@@ -61,9 +61,9 @@ import static net.thucydides.core.ThucydidesSystemProperty.SERENITY_FORK_NUMBER;
  * Glue code for running Cucumber via Serenity.
  * Sets up Serenity reporting and instrumentation.
  */
-public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
+public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CucumberWithSerenity.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CucumberSerenityRunner.class);
 
     private final List<FeatureRunner> children = new ArrayList<FeatureRunner>();
     private final EventBus bus;
@@ -81,7 +81,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
      * @param clazz the class with the @RunWith annotation.
      * @throws InitializationError if there is another problem
      */
-    public CucumberWithSerenity(Class clazz) throws InitializationError {
+    public CucumberSerenityRunner(Class clazz) throws InitializationError {
         super(clazz);
         ClassLoader classLoader = clazz.getClassLoader();
         Assertions.assertNoCucumberAnnotatedMethods(clazz);
@@ -138,7 +138,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
         String tagsExpression = ThucydidesSystemProperty.TAGS.from(environmentVariables,"");
         List<String> existingTagsValues = existingTags.stream().map(Object::toString).collect(toList());
         return Splitter.on(",").trimResults().omitEmptyStrings().splitToList(tagsExpression).stream()
-                .map(CucumberWithSerenity::toCucumberTag).filter(t -> !existingTagsValues.contains(t)).collect(toList());
+                .map(CucumberSerenityRunner::toCucumberTag).filter(t -> !existingTagsValues.contains(t)).collect(toList());
     }
 
     private static String toCucumberTag(String from) {
@@ -207,7 +207,7 @@ public class CucumberWithSerenity extends ParentRunner<FeatureRunner> {
     @Override
     protected Statement childrenInvoker(RunNotifier notifier) {
         Statement runFeatures = super.childrenInvoker(notifier);
-        return new CucumberWithSerenity.RunCucumber(runFeatures);
+        return new CucumberSerenityRunner.RunCucumber(runFeatures);
     }
 
     class RunCucumber extends Statement {

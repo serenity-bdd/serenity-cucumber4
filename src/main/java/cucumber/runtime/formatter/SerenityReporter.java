@@ -18,7 +18,7 @@ import io.cucumber.tagexpressions.TagExpressionParser;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.core.SerenityListeners;
 import net.serenitybdd.core.SerenityReports;
-import io.cucumber.junit.CucumberWithSerenity;
+import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.serenitybdd.cucumber.formatting.ScenarioOutlineDescription;
 import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.model.DataTable;
