@@ -2,15 +2,15 @@ package net.serenitybdd.cucumber.cli;
 
 import cucumber.runtime.ClassFinder;
 import cucumber.runtime.Runtime;
-import cucumber.runtime.RuntimeOptions;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
+import io.cucumber.core.options.CommandlineOptionsParser;
+import io.cucumber.core.options.RuntimeOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.serenitybdd.cucumber.CucumberWithSerenityRuntime;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
 
@@ -20,7 +20,7 @@ public class Main {
     }
 
     public static byte run(String[] argv, ClassLoader classLoader) throws IOException {
-        RuntimeOptions runtimeOptions = new RuntimeOptions(Arrays.asList(argv));
+        RuntimeOptions  runtimeOptions = new CommandlineOptionsParser().parse(argv).build() ;
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
         ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader, classLoader);
         CucumberWithSerenity.setRuntimeOptions(runtimeOptions);

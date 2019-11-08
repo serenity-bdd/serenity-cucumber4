@@ -2,7 +2,7 @@ package net.serenitybdd.cucumber;
 
 import cucumber.runtime.ClassFinder;
 import cucumber.runtime.Runtime;
-import cucumber.runtime.RuntimeOptions;
+import io.cucumber.core.options.RuntimeOptions;
 import cucumber.runtime.formatter.SerenityReporter;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
@@ -33,11 +33,8 @@ public class CucumberWithSerenityRuntime {
                                                         Configuration systemConfiguration) {
         ClassFinder resolvedClassFinder = Optional.ofNullable(classFinder).orElse(new ResourceLoaderClassFinder(resourceLoader, classLoader));
         SerenityReporter reporter = new SerenityReporter(systemConfiguration, resourceLoader);
-        //Runtime runtime =  new Runtime(resourceLoader, resolvedClassFinder, classLoader, runtimeOptions);
-        Runtime runtime = Runtime.builder().withResourceLoader(resourceLoader).withClassFinder(classFinder).
-                withClassLoader(classLoader).withRuntimeOptions(runtimeOptions).build();
-        //TODO
-        //runtimeOptions.addPlugin(reporter);
+        Runtime runtime = Runtime.builder().withResourceLoader(resourceLoader).withClassFinder(resolvedClassFinder).
+                withClassLoader(classLoader).withRuntimeOptions(runtimeOptions).withAdditionalPlugins(reporter).build();
         return runtime;
     }
 }

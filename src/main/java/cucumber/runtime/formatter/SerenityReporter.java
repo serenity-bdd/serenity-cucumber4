@@ -37,7 +37,6 @@ import java.io.File;
 import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static cucumber.runtime.formatter.TaggedScenario.*;
 import static java.util.stream.Collectors.toList;

@@ -1,9 +1,10 @@
-package net.serenitybdd.cucumber.util;
+package io.cucumber.junit;
 
+import io.cucumber.junit.FeatureRunnerExtractors;
 import org.junit.Test;
 import org.junit.runner.Description;
 
-import cucumber.runtime.junit.FeatureRunner;
+
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;

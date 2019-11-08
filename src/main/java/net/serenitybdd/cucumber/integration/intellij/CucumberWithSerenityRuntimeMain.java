@@ -1,16 +1,15 @@
 package net.serenitybdd.cucumber.integration.intellij;
 
 import cucumber.runtime.Runtime;
-import cucumber.runtime.RuntimeOptions;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
+import io.cucumber.core.options.CommandlineOptionsParser;
+import io.cucumber.core.options.RuntimeOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.thucydides.core.guice.Injectors;
 import net.thucydides.core.webdriver.Configuration;
 
 import java.io.IOException;
-
-import static java.util.Arrays.asList;
 
 /**
  * A test runner that allows you to run feature files directly from IntelliJ.
@@ -33,7 +32,8 @@ public class CucumberWithSerenityRuntimeMain {
      * @throws IOException if resources couldn't be loaded during execution
      */
     public static byte run(String[] argv, ClassLoader classLoader) throws IOException {
-        RuntimeOptions runtimeOptions = new RuntimeOptions(asList(argv));
+        
+        RuntimeOptions  runtimeOptions = new CommandlineOptionsParser().parse(argv).build() ;
 
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
         Configuration systemConfiguration = Injectors.getInjector().getInstance(Configuration.class);
