@@ -1,6 +1,6 @@
 package net.serenitybdd.cucumber.suiteslicing;
 
-import io.cucumber.junit.CucumberOptions;
+import cucumber.api.CucumberOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
