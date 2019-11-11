@@ -13,7 +13,7 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
-import static net.serenitybdd.cucumber.util.CucumberRunner.serenityRunnerForCucumberTestRunner
+import static io.cucumber.junit.CucumberRunner.serenityRunnerForCucumberTestRunner
 
 public class WhenRunningCucumberStoriesWithScreenshots extends Specification {
 
