@@ -18,6 +18,7 @@ import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import cucumber.runtime.io.ResourceLoaderClassFinder;
 import io.cucumber.core.options.CucumberOptionsAnnotationParser;
+import io.cucumber.core.options.EnvironmentOptionsParser;
 import io.cucumber.core.options.RuntimeOptions;
 import cucumber.runtime.model.CucumberFeature;
 import cucumber.runtime.model.FeatureLoader;
@@ -84,9 +85,22 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
     public CucumberSerenityRunner(Class clazz) throws InitializationError {
         super(clazz);
         ClassLoader classLoader = clazz.getClassLoader();
+        ResourceLoader resourceLoader = new MultiLoader(classLoader);
         Assertions.assertNoCucumberAnnotatedMethods(clazz);
+        
 
-        RuntimeOptions runtimeOptions = new CucumberOptionsAnnotationParser().parse(clazz).build();
+        // Parse the options early to provide fast feedback about invalid options
+        RuntimeOptions annotationOptions = new CucumberOptionsAnnotationParser(resourceLoader)
+                .withOptionsProvider(new JUnitCucumberOptionsProvider())
+                .parse(clazz)
+                .build();
+
+        RuntimeOptions runtimeOptions = new EnvironmentOptionsParser(resourceLoader)
+                .parse(Env.INSTANCE)
+                .build(annotationOptions);
+
+        runtimeOptions.addUndefinedStepsPrinterIfSummaryNotDefined();
+
         RuntimeOptionsBuilder runtimeOptionsBuilder =  new RuntimeOptionsBuilder();
         Collection<String> tagFilters = environmentSpecifiedTags(runtimeOptions.getTagFilters());
         for(String tagFilter : tagFilters ) {
@@ -94,12 +108,17 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
         }
         runtimeOptionsBuilder.build(runtimeOptions);
 
-        JUnitOptions junitOptions = new JUnitOptions();
-        junitOptions.setStrict(runtimeOptions.isStrict());
-        
+        JUnitOptions junitAnnotationOptions = new JUnitOptionsParser()
+                .parse(clazz)
+                .build();
+
+        JUnitOptions junitOptions = new JUnitOptionsParser()
+                .parse(runtimeOptions.getJunitOptions())
+                .setStrict(runtimeOptions.isStrict())
+                .build(junitAnnotationOptions);
+
         setRuntimeOptions(runtimeOptions);
 
-        ResourceLoader resourceLoader = new MultiLoader(classLoader);
         FeatureLoader featureLoader = new FeatureLoader(resourceLoader);
         FeaturePathFeatureSupplier featureSupplier = new FeaturePathFeatureSupplier(featureLoader, runtimeOptions);
         // Parse the features early. Don't proceed when there are lexer errors
@@ -167,12 +186,7 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
         // Parse the features early. Don't proceed when there are lexer errors
         final List<CucumberFeature> features = featureSupplier.get();
         EventBus bus = new TimeServiceEventBus(TimeService.SYSTEM);
-        // Start the run before reading the features.
-        // Allows the test source read events to be broadcast properly
-        bus.send(new TestRunStarted(bus.getTime()));
-        for (CucumberFeature feature : features) {
-            feature.sendTestSourceRead(bus);
-        }
+        
         SerenityReporter serenityReporter = new SerenityReporter(systemConfiguration, resourceLoader);
         Runtime runtime = Runtime.builder().withResourceLoader(resourceLoader).withClassFinder(classFinder).
                 withClassLoader(classLoader).withRuntimeOptions(runtimeOptions).
@@ -207,7 +221,7 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
     @Override
     protected Statement childrenInvoker(RunNotifier notifier) {
         Statement runFeatures = super.childrenInvoker(notifier);
-        return new CucumberSerenityRunner.RunCucumber(runFeatures);
+        return new RunCucumber(runFeatures);
     }
 
     class RunCucumber extends Statement {

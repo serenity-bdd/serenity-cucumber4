@@ -2,7 +2,7 @@ package net.serenitybdd.cucumber.outcomes
 
 import net.serenitybdd.cucumber.integration.BrokenStepLibraryScenario
 import net.serenitybdd.cucumber.integration.IllegalStepLibraryScenario
-import net.serenitybdd.cucumber.util.CucumberRunner
+import io.cucumber.junit.CucumberRunner
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification

@@ -2,7 +2,7 @@ package net.serenitybdd.cucumber.reports
 
 import cucumber.api.Result
 import net.serenitybdd.cucumber.integration.SimpleTableScenarioWithLineFilters
-import net.serenitybdd.cucumber.util.CucumberRunner
+import io.cucumber.junit.CucumberRunner
 import net.thucydides.core.reports.OutcomeFormat
 import net.thucydides.core.reports.TestOutcomeLoader
 import org.junit.Rule

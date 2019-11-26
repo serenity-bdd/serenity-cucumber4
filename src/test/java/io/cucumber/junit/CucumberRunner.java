@@ -1,8 +1,10 @@
-package net.serenitybdd.cucumber.util;
+package io.cucumber.junit;
 
+import cucumber.runtime.Env;
 import cucumber.runtime.io.MultiLoader;
 import cucumber.runtime.io.ResourceLoader;
 import io.cucumber.core.options.CucumberOptionsAnnotationParser;
+import io.cucumber.core.options.EnvironmentOptionsParser;
 import io.cucumber.core.options.RuntimeOptions;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import net.thucydides.core.configuration.SystemPropertiesConfiguration;
@@ -33,7 +35,17 @@ public class CucumberRunner {
                                                                                EnvironmentVariables environmentVariables) {
         ClassLoader classLoader = testClass.getClassLoader();
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
-        RuntimeOptions runtimeOptions = new CucumberOptionsAnnotationParser().parse(testClass).build();
+        // Parse the options early to provide fast feedback about invalid options
+        RuntimeOptions annotationOptions = new CucumberOptionsAnnotationParser(resourceLoader)
+                .withOptionsProvider(new JUnitCucumberOptionsProvider())
+                .parse(testClass)
+                .build();
+
+        RuntimeOptions runtimeOptions = new EnvironmentOptionsParser(resourceLoader)
+                .parse(Env.INSTANCE)
+                .build(annotationOptions);
+
+        runtimeOptions.addUndefinedStepsPrinterIfSummaryNotDefined();
 
         Configuration systemConfiguration = new SystemPropertiesConfiguration(environmentVariables);
         systemConfiguration.setOutputDirectory(outputDirectory);
@@ -43,7 +55,17 @@ public class CucumberRunner {
     public static cucumber.runtime.Runtime serenityRunnerForCucumberTestRunner(Class testClass, Configuration systemConfiguration) {
         ClassLoader classLoader = testClass.getClassLoader();
         ResourceLoader resourceLoader = new MultiLoader(classLoader);
-        RuntimeOptions runtimeOptions = new CucumberOptionsAnnotationParser().parse(testClass).build();
+        // Parse the options early to provide fast feedback about invalid options
+        RuntimeOptions annotationOptions = new CucumberOptionsAnnotationParser(resourceLoader)
+                .withOptionsProvider(new JUnitCucumberOptionsProvider())
+                .parse(testClass)
+                .build();
+
+        RuntimeOptions runtimeOptions = new EnvironmentOptionsParser(resourceLoader)
+                .parse(Env.INSTANCE)
+                .build(annotationOptions);
+
+        runtimeOptions.addUndefinedStepsPrinterIfSummaryNotDefined();
 
         return CucumberWithSerenity.createSerenityEnabledRuntime(resourceLoader, classLoader, runtimeOptions, systemConfiguration);
     }
