@@ -1,3 +1,4 @@
+@driver:htmlunit
 Feature: Hooks can be used with web tests as well
 
   @web

@@ -1,3 +1,4 @@
+@driver:htmlunit
 Feature: Marking scenarios as pending, skipped or ignored
 
   @expected-outcome:success

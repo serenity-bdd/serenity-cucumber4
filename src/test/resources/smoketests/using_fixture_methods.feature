@@ -1,3 +1,4 @@
+@driver:phantomjs
 Feature: Using Background Steps
 
   @do_something_before

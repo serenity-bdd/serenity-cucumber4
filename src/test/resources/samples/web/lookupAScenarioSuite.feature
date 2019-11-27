@@ -1,4 +1,4 @@
-@driver:phantomjs
+@driver:htmlunit
 @driver-options:--headless
 Feature: Looking up a scenario suite
 
