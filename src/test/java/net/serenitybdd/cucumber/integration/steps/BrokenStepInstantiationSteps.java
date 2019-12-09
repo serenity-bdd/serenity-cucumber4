@@ -1,6 +1,6 @@
 package net.serenitybdd.cucumber.integration.steps;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 import static org.assertj.core.api.Assertions.assertThat;;
 

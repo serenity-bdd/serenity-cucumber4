@@ -1,8 +1,8 @@
 package net.serenitybdd.cucumber.smoketests;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.annotations.Step;
 import net.thucydides.core.annotations.Steps;
@@ -36,10 +36,12 @@ public class SmokeTestStepDefinitions {
     private SomeStepLibrary someStepLibrary;
 
     @Given("^I want to use a step library$")
-    public void iWantToUseAStepLibrary() {}
+    public void iWantToUseAStepLibrary() {
+    }
 
     @When("^I add a step library field annotated with @Steps$")
-    public void iAddAStepLibraryFieldAnnotatedWithSteps() {}
+    public void iAddAStepLibraryFieldAnnotatedWithSteps() {
+    }
 
     @Then("^Serenity should instantiate the field$")
     public void serenityShouldInstantiateTheField() throws Throwable {
@@ -55,7 +57,7 @@ public class SmokeTestStepDefinitions {
     }
 
     @When("^I add a step library fields to each of them$")
-    public void iAddAStepLibraryFieldsToEachOfThem(){
+    public void iAddAStepLibraryFieldsToEachOfThem() {
     }
 
     @Then("^Serenity should instantiate a different library for each field$")
