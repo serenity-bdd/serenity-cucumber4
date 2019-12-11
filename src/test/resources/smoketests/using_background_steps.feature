@@ -1,14 +1,12 @@
-@driver:phantomjs
-@driver-options:--headless
 Feature: Using Background Steps
 
   Background:
-    Given I want to search for something
+    Given I want to add two numbers
 
   Scenario: Skipping a scenario
-    When I view the home page details
-    Then I should see "DuckDuckGo" in the page title
+    When the first number is 1
+    Then the running total should be 1
 
   Scenario: Running a scenario
-    When I view the home page details
-    Then I should see "DuckDuckGo" in the page title
+    When the first number is 1
+    Then the running total should be 1

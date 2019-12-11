@@ -1,13 +1,13 @@
-@driver:phantomjs
-Feature: Using Background Steps
+Feature: Using Fixture Methods
 
-  @do_something_before
+  @start-at-two
   Scenario: Running a scenario with a Before clause
-    When I lookup apple
-    Then I should see "DuckDuckGo" in the page title
+    Given I want to add two numbers
+    When the first number is 1
+    Then the running total should be 3
 
-  @do_something_after
+  @multiply-result-by-two
   Scenario: Running a scenario with an After clause
-    Given I want to search for something
-    When I lookup pear
-    Then I should see "DuckDuckGo" in the page title
+    Given I want to add two numbers
+    When the first number is 1
+    Then the running total should be 1

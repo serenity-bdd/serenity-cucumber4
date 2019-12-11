@@ -78,6 +78,20 @@ public class SkippingScenariosStepDefinitions {
         connor.opensTheSearchApp();
     }
 
+    @Given("I want to add two numbers")
+    public void givenIWantToAddTwoNumbers() {
+    }
+
+    int runningTotal = 0;
+    @When("the first number is (.*)")
+    public void theFirstNumberIs(int n) {
+        runningTotal+=n;
+    }
+
+    @Then("the running total should be (.*)")
+    public void runningTotalIs(int n) {
+        assertThat(runningTotal).isEqualTo(n);
+    }
     @When("I lookup (.*)")
     public void whenILookup(String searchTerm) {
         connor.searchesFor(searchTerm);
@@ -92,13 +106,13 @@ public class SkippingScenariosStepDefinitions {
         connor.shouldSeeTitle(title);
     }
 
-    @Before("@do_something_before")
+    @Before("@start-at-two")
     public void doSomethingBefore() {
-        connor.opensTheSearchApp();
+        runningTotal = 2;
     }
 
-    @After("@do_something_after")
+    @After("@multiply-result-by-two")
     public void doSomethingAfter() {
-        connor.shouldSeeAListOfResults();
+        runningTotal = runningTotal * 2;
     }
 }
