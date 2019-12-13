@@ -5,7 +5,7 @@ Feature: Add two numbers
     Given the number <a> and the number <b>
     When <a> plus <b>
     Then the result is equals to <c>
-
+    And this step should throw a PendingException
 
     Examples:
       | a | b | c |

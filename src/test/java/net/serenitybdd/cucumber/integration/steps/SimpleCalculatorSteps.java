@@ -5,24 +5,27 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class SimpleCalculatorSteps {
 
+    int a;
+    int b;
     @Given("^the number ([0-9]*) and the number ([0-9]*)$")
     public void theNumberAAndTheNumberB(Integer a, Integer b) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        this.a = a;
+        this.b = b;
     }
 
+    int result;
     @When("^([0-9]*) plus ([0-9]*)$")
     public void aPlusB(Integer a, Integer b) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+        result = a + b;
     }
 
     @Then("^the result is equals to ([0-9]*)$")
-    public void theResultIsEqualsToC(Integer b) throws Throwable {
-        // Write code here that turns the phrase above into concrete actions
-        throw new PendingException();
+    public void theResultIsEqualsToC(Integer expectedResult) throws Throwable {
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Given("^the amount ([0-9]*) and the amount ([0-9]*)$")

@@ -4,14 +4,23 @@ package cucumber.runtime.formatter;
 import cucumber.api.TestStep;
 import gherkin.ast.*;
 import net.thucydides.core.model.DataTable;
+import net.thucydides.core.model.DataTableRow;
+import net.thucydides.core.model.TestTag;
+import net.thucydides.core.steps.StepEventBus;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.stream.Collectors.toList;
 
 class ScenarioContext {
-    final Queue<Step> stepQueue = new LinkedList<>();
-    final Queue<cucumber.api.TestStep> testStepQueue = new LinkedList<>();
+    private final Queue<Step> stepQueue = new LinkedList<>();
+    private final Queue<cucumber.api.TestStep> testStepQueue = new LinkedList<>();
 
-    boolean examplesRunning;
+    private boolean examplesRunning;
+    private boolean addingScenarioOutlineSteps = false;
+    private DataTable table;
 
     //keys are line numbers, entries are example rows (key=header, value=rowValue )
     Map<Integer, Map<String, String>> exampleRows;
@@ -20,8 +29,6 @@ class ScenarioContext {
     Map<Integer, List<Tag>> exampleTags;
 
     int exampleCount = 0;
-
-    DataTable table;
 
     boolean waitingToProcessBackgroundSteps = false;
 
@@ -33,17 +40,27 @@ class ScenarioContext {
 
     List<Tag> featureTags = new ArrayList<>();
 
-    boolean addingScenarioOutlineSteps = false;
+    String currentFeaturePath;
+
+    private FeaturePathFormatter featurePathFormatter = new FeaturePathFormatter();
+
+    public void currentFeaturePathIs(String featurePath) {
+        currentFeaturePath = featurePath;
+    }
+
+    public ScenarioOutline currentScenarioOutline() {
+        return (ScenarioOutline) currentScenarioDefinition;
+    }
+
+    public String currentFeaturePath() {
+        return currentFeaturePath;
+    }
 
     public Queue<Step> getStepQueue() {
         return stepQueue;
     }
 
-    public Queue<TestStep> getTestStepQueue() {
-        return testStepQueue;
-    }
-
-    public boolean isExamplesRunning() {
+    public boolean examplesAreRunning() {
         return examplesRunning;
     }
 
@@ -87,6 +104,10 @@ class ScenarioContext {
         return addingScenarioOutlineSteps;
     }
 
+    public void doneAddingScenarioOutlineSteps() {
+        this.addingScenarioOutlineSteps = false;
+    }
+
     public void setFeatureTags(List<Tag> tags) {
         this.featureTags = new ArrayList<>(tags);
     }
@@ -102,6 +123,10 @@ class ScenarioContext {
     public void startNewExample() {
         examplesRunning = true;
         addingScenarioOutlineSteps = true;
+    }
+
+    public void setExamplesRunning(boolean examplesRunning) {
+        this.examplesRunning = examplesRunning;
     }
 
     public List<Tag> getScenarioTags() {
@@ -126,15 +151,83 @@ class ScenarioContext {
         stepQueue.clear();
     }
 
-    public void addStep(Step step) {
+    public void clearTestStepQueue() {
+        testStepQueue.clear();
+    }
+
+    public void queueStep(Step step) {
         stepQueue.add(step);
     }
 
-    public void addTestStep(TestStep testStep) {
+    public void queueTestStep(TestStep testStep) {
         testStepQueue.add(testStep);
     }
 
     public Step getCurrentStep() {
         return stepQueue.peek();
     }
+
+    public Step nextStep() {
+        return stepQueue.poll();
+    }
+
+    public TestStep nextTestStep() {
+        return testStepQueue.poll();
+    }
+
+    public boolean noStepsAreQueued() {
+        return stepQueue.isEmpty();
+    }
+
+    public boolean hasScenarioId(String scenarioId) {
+        return (currentScenarioId != null) && (currentScenarioId.equals(scenarioId));
+    }
+
+    public void setTable(DataTable table) {
+        this.table = table;
+        exampleCount = table.getSize();
+    }
+
+    public void addTableRows(List<String> headers,
+                             List<Map<String, String>> rows,
+                             String name,
+                             String description,
+                             Map<Integer, Integer> lineNumbersOfEachRow) {
+        table.startNewDataSet(name, description);
+
+        AtomicInteger rowNumber = new AtomicInteger();
+        rows.forEach(
+                row -> table.appendRow(newRow(headers, lineNumbersOfEachRow, rowNumber.getAndIncrement(), row))
+        );
+        table.updateLineNumbers(lineNumbersOfEachRow);
+        exampleCount = table.getSize();
+    }
+
+    @NotNull
+    private DataTableRow newRow(List<String> headers,
+                                Map<Integer, Integer> lineNumbersOfEachRow,
+                                int rowNumber,
+                                Map<String, String> row) {
+        return new DataTableRow(
+                rowValuesFrom(headers, row),
+                lineNumbersOfEachRow.getOrDefault(rowNumber, 0));
+    }
+
+    private List<String> rowValuesFrom(List<String> headers, Map<String, String> row) {
+        return headers.stream().map(row::get).collect(toList());
+    }
+
+    public void addTableTags(List<TestTag> tags) {
+        table.addTagsToLatestDataSet(tags);
+    }
+
+    public void clearTable() {
+        table = null;
+    }
+
+    public StepEventBus stepEventBus() {
+        String prefixedPath = featurePathFormatter.featurePathWithPrefixIfNecessary(currentFeaturePath());
+        return StepEventBus.eventBusFor(prefixedPath);
+    }
 }
+

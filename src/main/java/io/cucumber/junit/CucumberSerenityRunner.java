@@ -144,12 +144,14 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
         }
     }
 
+    private static RuntimeOptions DEFAULT_RUNTIME_OPTIONS;
     public static void setRuntimeOptions(RuntimeOptions runtimeOptions) {
         RUNTIME_OPTIONS.set(runtimeOptions);
+        DEFAULT_RUNTIME_OPTIONS = runtimeOptions;
     }
 
     public static RuntimeOptions currentRuntimeOptions() {
-        return RUNTIME_OPTIONS.get();
+        return (RUNTIME_OPTIONS.get() != null) ? RUNTIME_OPTIONS.get() : DEFAULT_RUNTIME_OPTIONS;
     }
 
     private static Collection<String> environmentSpecifiedTags(List<?> existingTags) {
