@@ -483,12 +483,6 @@ Feature: A simple feature with tags
 
         and:
         testOutcome1.result == TestResult.PENDING
-        testOutcome1.stepCount == 3
-
-        and:
-        testOutcome1.testSteps.get(0).getResult() == TestResult.PENDING;
-        testOutcome1.testSteps.get(1).getResult() == TestResult.IGNORED;
-        testOutcome1.testSteps.get(2).getResult() == TestResult.IGNORED;
 
     }
 

@@ -48,7 +48,7 @@ class WhenWorkingWithTaggedExampleTables extends Specification {
             recordedTestOutcomes.size() == 1
         and: "line numbers should be recorded for each executed example"
             def testOutcome = recordedTestOutcomes[0]
-            testOutcome.testSteps[0].lineNumber == 19 && testOutcome.testSteps[1].lineNumber == 20
+            testOutcome.testSteps[0].lineNumber == 12 && testOutcome.testSteps[1].lineNumber == 13
     }
 
 

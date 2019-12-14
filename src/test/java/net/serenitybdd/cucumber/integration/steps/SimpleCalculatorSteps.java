@@ -28,6 +28,11 @@ public class SimpleCalculatorSteps {
         assertThat(result).isEqualTo(expectedResult);
     }
 
+    @Then("a PendingException should be thrown")
+    public void throwPending() {
+        throw new PendingException();
+    }
+
     @Given("^the amount ([0-9]*) and the amount ([0-9]*)$")
     public void theAmounts(Integer a, Integer b) throws Throwable {
     }

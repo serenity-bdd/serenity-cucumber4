@@ -19,13 +19,14 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SkippingScenariosStepDefinitions {
+
     @DefaultUrl("https://duckduckgo.com")
     public static class DuckDuckGoSearchPage extends PageObject {
 
-        @FindBy(id="search_form_input_homepage")
+        @FindBy(id = "search_form_input_homepage")
         WebElementFacade searchField;
 
-        @FindBy(id="search_button_homepage")
+        @FindBy(id = "search_button_homepage")
         WebElementFacade searchButton;
 
         @FindBy(className = "result__title")
@@ -66,7 +67,8 @@ public class SkippingScenariosStepDefinitions {
         }
 
         @Step
-        public void shouldSeeAListOfResults() {}
+        public void shouldSeeAListOfResults() {
+        }
 
     }
 
@@ -83,15 +85,17 @@ public class SkippingScenariosStepDefinitions {
     }
 
     int runningTotal = 0;
+
     @When("the first number is (.*)")
     public void theFirstNumberIs(int n) {
-        runningTotal+=n;
+        runningTotal += n;
     }
 
     @Then("the running total should be (.*)")
     public void runningTotalIs(int n) {
         assertThat(runningTotal).isEqualTo(n);
     }
+
     @When("I lookup (.*)")
     public void whenILookup(String searchTerm) {
         connor.searchesFor(searchTerm);
