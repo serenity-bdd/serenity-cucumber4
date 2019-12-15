@@ -1,7 +1,6 @@
 package cucumber.runtime;
 
-//import io.cucumber.core.backend.ObjectFactory;
-import cucumber.api.java.ObjectFactory;
+import io.cucumber.core.backend.ObjectFactory;
 import net.serenitybdd.core.Serenity;
 import net.thucydides.core.pages.Pages;
 import net.thucydides.core.webdriver.ThucydidesWebDriverSupport;
@@ -17,9 +16,9 @@ import java.util.*;
 
 public class SerenityObjectFactory implements ObjectFactory {
 
-    private final Set<Class<?>> classes = Collections.synchronizedSet(new HashSet<Class<?>>());
+    private final Set<Class<?>> classes = Collections.synchronizedSet(new HashSet<>());
 
-    private final Map<Class<?>, Object> instances = Collections.synchronizedMap(new HashMap<Class<?>, Object>());
+    private final Map<Class<?>, Object> instances = Collections.synchronizedMap(new HashMap<>());
 
     public void start() {
     }
@@ -75,7 +74,7 @@ public class SerenityObjectFactory implements ObjectFactory {
         try {
             ThucydidesWebDriverSupport.initialize();
             Pages pageFactory = ThucydidesWebDriverSupport.getPages();
-            Class[] constructorArgs = new Class[1];
+            Class<?>[] constructorArgs = new Class[1];
             constructorArgs[0] = Pages.class;
             Constructor<T> constructor = type.getConstructor(constructorArgs);
             newInstance = constructor.newInstance(pageFactory);
@@ -87,7 +86,7 @@ public class SerenityObjectFactory implements ObjectFactory {
     }
 
     private boolean hasConstructorWithPagesParameter(Class<?> type) {
-        Class[] constructorArgs = new Class[1];
+        Class<?>[] constructorArgs = new Class[1];
         constructorArgs[0] = Pages.class;
         try {
             type.getConstructor(constructorArgs);

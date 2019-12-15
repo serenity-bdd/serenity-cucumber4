@@ -1,7 +1,7 @@
 package net.serenitybdd.cucumber.integration.steps;
 
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
 import net.thucydides.core.annotations.Steps;
 import net.serenitybdd.cucumber.integration.steps.thucydides.SampleWebSteps;
 

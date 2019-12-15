@@ -1,6 +1,6 @@
 package net.serenitybdd.cucumber.integration.steps;
 
-import cucumber.api.java.en.Given;
+import io.cucumber.java.en.Given;
 
 /**
  * Created by john on 15/07/2014.
