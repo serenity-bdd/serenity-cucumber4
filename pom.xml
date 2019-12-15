@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.serenity-bdd</groupId>
   <artifactId>serenity-cucumber4</artifactId>
-  <version>1.0.25-SNAPSHOT</version>
+  <version>1.0.25</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,7 +38,7 @@
     <connection>scm:git:https://github.com/serenity-bdd/serenity-cucumber4.git</connection>
     <developerConnection>scm:git:https://github.com/serenity-bdd/serenity-cucumber4.git</developerConnection>
     <url>https://github.com/serenity-bdd/serenity-cucumber4</url>
-    <tag>HEAD</tag>
+    <tag>serenity-cucumber4-1.0.25</tag>
   </scm>
 
   <build>
