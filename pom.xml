@@ -4,7 +4,7 @@
   <name>serenity-cucumber4</name>
   <groupId>net.serenity-bdd</groupId>
   <artifactId>serenity-cucumber4</artifactId>
-  <version>1.0.29</version>
+  <version>1.0.30-SNAPSHOT</version>
   <description>Serenity Cucumber integration</description>
 
   <properties>
@@ -40,7 +40,7 @@
     <connection>scm:git:https://github.com/serenity-bdd/serenity-cucumber4.git</connection>
     <developerConnection>scm:git:https://github.com/serenity-bdd/serenity-cucumber4.git</developerConnection>
     <url>https://github.com/serenity-bdd/serenity-cucumber4</url>
-    <tag>serenity-cucumber4-1.0.29</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <build>
