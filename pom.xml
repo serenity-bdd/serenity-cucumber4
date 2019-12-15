@@ -5,6 +5,7 @@
   <groupId>net.serenity-bdd</groupId>
   <artifactId>serenity-cucumber4</artifactId>
   <version>1.0.27-SNAPSHOT</version>
+  <description>Serenity Cucumber integration</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
