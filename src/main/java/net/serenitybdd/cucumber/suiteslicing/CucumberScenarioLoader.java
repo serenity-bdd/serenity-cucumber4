@@ -9,10 +9,11 @@ import gherkin.ast.Scenario;
 import gherkin.ast.ScenarioDefinition;
 import gherkin.ast.ScenarioOutline;
 import gherkin.ast.Tag;
+import net.serenitybdd.cucumber.util.PathUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.util.Collections;
@@ -56,7 +57,7 @@ public class CucumberScenarioLoader {
                     .stream()
                     .filter(child -> asList(ScenarioOutline.class, Scenario.class).contains(child.getClass()))
                     .map(scenarioDefinition -> new WeightedCucumberScenario(
-                        new File(cucumberFeature.getUri()).getName(),
+                        PathUtils.getAsFile(cucumberFeature.getUri()).getName(),
                         cucumberFeature.getGherkinFeature().getFeature().getName(),
                         scenarioDefinition.getName(),
                         scenarioWeightFor(cucumberFeature, scenarioDefinition),
