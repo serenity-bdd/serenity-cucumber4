@@ -550,7 +550,7 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
         getContext().currentScenario = scenarioIdFrom(TestSourcesModel.convertToId(feature.getName()), TestSourcesModel.convertToId(scenario.getName()));
         if (getContext().examplesAreRunning()) {
             if (newScenario) {
-                startScenario(feature, scenario, scenarioName);
+                startScenario(feature, scenario, scenario.getName());
                 getContext().stepEventBus().useExamplesFrom(getContext().getTable());
                 getContext().stepEventBus().useScenarioOutline(ScenarioOutlineDescription.from(scenario).getDescription());
             } else {
@@ -564,6 +564,7 @@ public class SerenityReporter implements Plugin, ConcurrentEventListener {
 
     private void startScenario(Feature currentFeature, ScenarioDefinition scenarioDefinition, String scenarioName) {
         getContext().stepEventBus().setTestSource(TestSourceType.TEST_SOURCE_CUCUMBER.getValue());
+
         getContext().stepEventBus().testStarted(scenarioName,
                 scenarioIdFrom(TestSourcesModel.convertToId(currentFeature.getName()), TestSourcesModel.convertToId(scenarioName)));
         getContext().stepEventBus().addDescriptionToCurrentTest(scenarioDefinition.getDescription());
