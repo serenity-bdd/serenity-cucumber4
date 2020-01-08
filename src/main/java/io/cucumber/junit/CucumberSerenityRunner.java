@@ -27,6 +27,7 @@ import net.serenitybdd.cucumber.suiteslicing.CucumberSuiteSlicer;
 import net.serenitybdd.cucumber.suiteslicing.ScenarioFilter;
 import net.serenitybdd.cucumber.suiteslicing.TestStatistics;
 import net.serenitybdd.cucumber.suiteslicing.WeightedCucumberScenarios;
+import net.serenitybdd.cucumber.util.PathUtils;
 import net.serenitybdd.cucumber.util.Splitter;
 import net.thucydides.core.ThucydidesSystemProperty;
 import net.thucydides.core.guice.Injectors;
@@ -335,7 +336,7 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
     private Predicate<FeatureRunner> forIncludedFeatures(WeightedCucumberScenarios weightedCucumberScenarios) {
         return featureRunner -> {
             String featureName = FeatureRunnerExtractors.extractFeatureName(featureRunner);
-            String featurePath = Paths.get(FeatureRunnerExtractors.featurePathFor(featureRunner)).getFileName().toString();
+            String featurePath =  PathUtils.getAsFile(FeatureRunnerExtractors.featurePathFor(featureRunner)).getName();
             boolean matches = weightedCucumberScenarios.scenarios.stream().anyMatch(scenario -> featurePath.equals(scenario.featurePath));
             LOGGER.debug("{} in filtering '{}' in {}", matches ? "Including" : "Not including", featureName, featurePath);
             return matches;
