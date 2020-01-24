@@ -4,7 +4,7 @@
   <name>serenity-cucumber4</name>
   <groupId>net.serenity-bdd</groupId>
   <artifactId>serenity-cucumber4</artifactId>
-  <version>2.1.0</version>
+  <version>2.1.1-SNAPSHOT</version>
   <description>Serenity Cucumber integration</description>
 
   <properties>
