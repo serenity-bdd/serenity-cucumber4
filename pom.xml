@@ -13,6 +13,7 @@
     <bintray.package>serenity-cucumber4</bintray.package>
     <java.version>1.8</java.version>
     <serenity.version>2.1.0</serenity.version>
+    <cucumber.version>4.8,0</cucumber.version>
     <maven.core.version>3.5.0</maven.core.version>
     <maven.repoorting.version>3.0</maven.repoorting.version>
     <maven.plugin.version>3.5</maven.plugin.version>
@@ -97,37 +98,37 @@
     <dependency>
       <groupId>net.serenity-bdd</groupId>
       <artifactId>serenity-core</artifactId>
-      <version>2.0.90</version>
+      <version>${serenity.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.serenity-bdd</groupId>
       <artifactId>serenity-screenplay</artifactId>
-      <version>2.0.90</version>
+      <version>${serenity.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.serenity-bdd</groupId>
       <artifactId>serenity-screenplay-webdriver</artifactId>
-      <version>2.0.90</version>
+      <version>${serenity.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-core</artifactId>
-      <version>4.8.0</version>
+      <version>${cucumber.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-java</artifactId>
-      <version>4.8.0</version>
+      <version>${cucumber.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>io.cucumber</groupId>
       <artifactId>cucumber-junit</artifactId>
-      <version>4.8.0</version>
+      <version>${cucumber.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
