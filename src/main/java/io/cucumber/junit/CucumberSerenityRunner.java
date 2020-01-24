@@ -102,13 +102,6 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
 
         runtimeOptions.addUndefinedStepsPrinterIfSummaryNotDefined();
 
-        RuntimeOptionsBuilder runtimeOptionsBuilder =  new RuntimeOptionsBuilder();
-        Collection<String> tagFilters = environmentSpecifiedTags(runtimeOptions.getTagFilters());
-        for(String tagFilter : tagFilters ) {
-            runtimeOptionsBuilder.addTagFilter(tagFilter);
-        }
-        runtimeOptionsBuilder.build(runtimeOptions);
-
         JUnitOptions junitAnnotationOptions = new JUnitOptionsParser()
                 .parse(clazz)
                 .build();
@@ -176,12 +169,6 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
                                                        RuntimeOptions runtimeOptions,
                                                        Configuration systemConfiguration) {
         ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader, classLoader);
-        RuntimeOptionsBuilder runtimeOptionsBuilder = new RuntimeOptionsBuilder();
-        Collection<String> allTagFilters = environmentSpecifiedTags(runtimeOptions.getTagFilters());
-        for(String tagFilter :  allTagFilters) {
-            runtimeOptionsBuilder.addTagFilter(tagFilter);
-        }
-        runtimeOptionsBuilder.build(runtimeOptions);
         setRuntimeOptions(runtimeOptions);
 
         FeatureLoader featureLoader = new FeatureLoader(resourceLoader);
@@ -258,9 +245,6 @@ public class CucumberSerenityRunner extends ParentRunner<FeatureRunner> {
         super.setScheduler(scheduler);
         multiThreadingAssumed = true;
     }
-
-
-
 
     @Override
     public List<FeatureRunner> getChildren() {
