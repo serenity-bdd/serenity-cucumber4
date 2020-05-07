@@ -1,3 +1,8 @@
+# RETIRED 
+
+We have retired serenity-cucumber4 - for new work please use https://github.com/serenity-bdd/serenity-cucumber5
+
+
 # Getting started with Serenity and Cucumber 4
 
 Serenity BDD is a library that makes it easier to write high quality automated acceptance tests, with powerful reporting and living documentation features. It has strong support for both web testing with Selenium, and API testing using RestAssured. 
